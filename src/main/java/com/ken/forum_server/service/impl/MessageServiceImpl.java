@@ -50,7 +50,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public int readMessage(List<Integer> ids) {
+    public int  readMessage(List<Integer> ids) {
         return messageDao.updateStatus(ids, 1);
     }
 

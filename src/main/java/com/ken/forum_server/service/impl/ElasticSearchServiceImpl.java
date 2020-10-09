@@ -142,5 +142,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         postRepository.deleteAll();
     }
 
+    @Override
+    public void saveAllPost(List<Post> posts) {
+        postRepository.saveAll(posts);
+    }
+
 
 }

@@ -49,7 +49,7 @@ public interface PostDao {
     @Update("update post set comment_count = #{commentCount} where id = #{id}")
     void updateCommentCount(int id, int commentCount);
 
-    @Select("select * from post where user_id = #{userId} order by id desc limit #{offset} , #{limit} ")
+    @Select("select * from post where user_id = #{userId} and status != 2 order by id desc limit #{offset} , #{limit} ")
     List<Post> selectPosts(int userId, int offset, int limit);
 
     @Update("update post set type = #{type} where id = #{id}")

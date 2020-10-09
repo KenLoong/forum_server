@@ -4,6 +4,8 @@ import com.ken.forum_server.annotation.TokenFree;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dto.CommentDto;
 import com.ken.forum_server.event.EventProducer;
+import com.ken.forum_server.exception.CustomException;
+import com.ken.forum_server.exception.CustomExceptionCode;
 import com.ken.forum_server.pojo.Comment;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.Post;
@@ -80,6 +82,9 @@ public class PostController extends BaseController {
     public Result postDetail(@PathVariable("pid") int pid){
         //帖子
         Post post = postService.findPostById(pid);
+        if (post.getStatus() == 2){
+            throw new CustomException(CustomExceptionCode.PATH_ERROR);
+        }
 
         //设置点赞数
         long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());

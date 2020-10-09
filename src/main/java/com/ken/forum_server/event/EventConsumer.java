@@ -1,12 +1,15 @@
 package com.ken.forum_server.event;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ken.forum_server.dao.PostDao;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.Message;
 import com.ken.forum_server.pojo.Post;
+import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.ElasticSearchService;
 import com.ken.forum_server.service.MessageService;
 import com.ken.forum_server.service.PostService;
+import com.ken.forum_server.util.MailUtil;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.ken.forum_server.util.ConstantUtil.*;
@@ -30,7 +34,11 @@ public class EventConsumer  {
     @Autowired
     private PostService postService;
     @Autowired
+    private PostDao postDao;
+    @Autowired
     private ElasticSearchService elasticSearchService;
+    @Autowired
+    MailUtil mailUtil;
 
     //监听主题
     @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_LIKE, TOPIC_FOLLOW})
@@ -109,5 +117,47 @@ public class EventConsumer  {
 
         elasticSearchService.deletePost(event.getEntityId());
         postService.deteteById(event.getEntityId());
+    }
+
+    // 消费es库重新录入事件
+    @KafkaListener(topics = {TOPIC_RESET_ES})
+    public void handleResetEs(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
+            logger.error("消息的内容为空!");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息格式错误!");
+            return;
+        }
+
+        int total = postDao.selectUserPostsCount(event.getEntityId());
+        for (int i = 0; i <= total / 5; i++) {
+            int offset = i * 5;
+            List<Post> posts = postDao.selectPosts(event.getEntityId(), offset, 5);
+            elasticSearchService.saveAllPost(posts);
+        }
+
+    }
+
+    // 消费注册事件
+    @KafkaListener(topics = {TOPIC_REGISTER})
+    public void handleRegister(ConsumerRecord record) {
+        if (record == null || record.value() == null) {
+            logger.error("消息的内容为空!");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if (event == null) {
+            logger.error("消息格式错误!");
+            return;
+        }
+        Map<String, Object> data = event.getData();
+        User user = (User)data.get("user");
+        //发送邮件
+        mailUtil.sendMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
     }
 }

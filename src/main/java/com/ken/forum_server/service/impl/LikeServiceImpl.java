@@ -57,6 +57,7 @@ public class LikeServiceImpl implements LikeService {
                     operations.opsForValue().increment(userLikeKey);
                 }
 
+                //提交事务
                 return operations.exec();
             }
         });

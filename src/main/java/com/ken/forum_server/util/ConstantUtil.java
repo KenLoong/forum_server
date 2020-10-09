@@ -43,6 +43,16 @@ public class ConstantUtil {
     public static final String TOPIC_DELETE = "delete";
 
     /**
+     * 主题: 删帖
+     */
+    public static final String TOPIC_RESET_ES = "resetEs";
+
+    /**
+     * 主题：注册
+     */
+    public static final String TOPIC_REGISTER = "delete";
+
+    /**
      * 系统用户ID
      */
     public static final int SYSTEM_USER_ID = 1;

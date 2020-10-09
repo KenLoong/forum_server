@@ -13,7 +13,6 @@ import com.ken.forum_server.vo.LetterVo;
 import com.ken.forum_server.vo.MessageVo;
 import com.ken.forum_server.vo.PaginationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 
@@ -32,6 +31,8 @@ public class MessageController extends BaseController {
     // 会话列表
     @RequestMapping(path = "/letter/list", method = RequestMethod.GET)
     public Result getLetterList(@RequestParam(defaultValue = "1") int currentPage) {
+
+
         int userId = getUserId(request);
         User user = userService.findUserById(userId);
 

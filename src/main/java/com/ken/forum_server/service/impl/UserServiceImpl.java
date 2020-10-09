@@ -2,6 +2,8 @@ package com.ken.forum_server.service.impl;
 
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dao.UserDao;
+import com.ken.forum_server.event.EventProducer;
+import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.UserService;
 import com.ken.forum_server.shiro.JWToken;
@@ -19,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.ken.forum_server.util.ConstantUtil.TOPIC_LIKE;
+import static com.ken.forum_server.util.ConstantUtil.TOPIC_REGISTER;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -27,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     MailUtil mailUtil;
+
+    @Autowired
+    EventProducer eventProducer;
 
 
     private String uploadPath = "/static/img/avatar/";
@@ -102,8 +110,15 @@ public class UserServiceImpl implements UserService {
         user.setState(0);
         user.setAvatar(uploadPath+"5.jpg");
 
+        //触发注册事件
+        Event event = new Event()
+                .setTopic(TOPIC_REGISTER)
+                .setData("user",user);
+        eventProducer.fireEvent(event);
+
+
         //发送邮件
-        mailUtil.sendMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
+        //mailUtil.sendMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
         userDao.addUser(user);
         return new Result(200,"注册成功");
     }
