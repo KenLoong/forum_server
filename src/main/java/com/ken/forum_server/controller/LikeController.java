@@ -1,8 +1,8 @@
 package com.ken.forum_server.controller;
 
+import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dto.LikeDto;
-import com.ken.forum_server.event.EventProducer;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.LikeService;
@@ -25,8 +25,8 @@ public class LikeController extends BaseController{
     private LikeService likeService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private EventProducer eventProducer;
+//    @Autowired
+//    private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -59,7 +59,10 @@ public class LikeController extends BaseController{
                     .setEntityId(likeDto.getEntityId())
                     .setEntityUserId(likeDto.getEntityUserId())
                     .setData("postId", likeDto.getPostId());
-            eventProducer.fireEvent(event);
+
+            //用kafka发送事件
+//            eventProducer.fireEvent(event);
+            EventHandler.handleTask(event);
         }
 
         if (likeDto.getEntityType() == ENTITY_TYPE_POST){

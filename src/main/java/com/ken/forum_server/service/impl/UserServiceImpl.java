@@ -1,8 +1,8 @@
 package com.ken.forum_server.service.impl;
 
+import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dao.UserDao;
-import com.ken.forum_server.event.EventProducer;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.UserService;
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.ken.forum_server.util.ConstantUtil.TOPIC_LIKE;
 import static com.ken.forum_server.util.ConstantUtil.TOPIC_REGISTER;
 
 @Service
@@ -33,8 +32,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     MailUtil mailUtil;
 
-    @Autowired
-    EventProducer eventProducer;
+//    @Autowired
+//    EventProducer eventProducer;
 
 
     private String uploadPath = "/static/img/avatar/";
@@ -114,7 +113,9 @@ public class UserServiceImpl implements UserService {
         Event event = new Event()
                 .setTopic(TOPIC_REGISTER)
                 .setData("user",user);
-        eventProducer.fireEvent(event);
+        //用kafka
+//        eventProducer.fireEvent(event);
+        EventHandler.handleTask(event);
 
 
         //发送邮件

@@ -1,9 +1,9 @@
 package com.ken.forum_server.controller;
 
 import com.ken.forum_server.annotation.TokenFree;
+import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dto.CommentDto;
-import com.ken.forum_server.event.EventProducer;
 import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
 import com.ken.forum_server.pojo.Comment;
@@ -48,8 +48,8 @@ public class PostController extends BaseController {
     @Autowired
     private CollectService collectService;
 
-    @Autowired
-    private EventProducer eventProducer;
+//    @Autowired
+//    private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -77,6 +77,11 @@ public class PostController extends BaseController {
     }
 
 
+    /**
+     * 帖子详情
+     * @param pid
+     * @return
+     */
     @TokenFree
     @GetMapping("/detail/{pid}")
     public Result postDetail(@PathVariable("pid") int pid){
@@ -187,7 +192,11 @@ public class PostController extends BaseController {
     }
 
 
-
+    /**
+     * 查询帖子评论
+     * @param commentDto
+     * @return
+     */
     @TokenFree
     @PostMapping("/comment/list")
     public Result CommentList(@RequestBody CommentDto commentDto){
@@ -309,7 +318,9 @@ public class PostController extends BaseController {
                 .setUserId(getUserId(request))
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
-        eventProducer.fireEvent(event);
+        //用kafka
+//        eventProducer.fireEvent(event);
+        EventHandler.handleTask(event);
 
         return new Result().success("");
     }
@@ -327,7 +338,9 @@ public class PostController extends BaseController {
                 .setUserId(getUserId(request))
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
-        eventProducer.fireEvent(event);
+        //用kafka
+//        eventProducer.fireEvent(event);
+        EventHandler.handleTask(event);
 
         // 计算帖子分数
         String redisKey = RedisKeyUtil.getPostScoreKey();
@@ -349,8 +362,10 @@ public class PostController extends BaseController {
                 .setUserId(getUserId(request))
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
-        eventProducer.fireEvent(event);
+        //用kafka
+//        eventProducer.fireEvent(event);
 
+        EventHandler.handleTask(event);
         return new Result().success("");
     }
 

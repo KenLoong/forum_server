@@ -22,32 +22,50 @@ public class FollowServiceImpl implements FollowService {
     @Autowired
     private UserService userService;
 
+    /**
+     * 关注
+     * @param userId
+     * @param entityType
+     * @param entityId
+     */
     @Override
     public void follow(int userId, int entityType, int entityId) {
         redisTemplate.execute(new SessionCallback() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+
                 String followeeKey = RedisKeyUtil.getFolloweeKey(userId, entityType);
                 String followerKey = RedisKeyUtil.getFollowerKey(entityType, entityId);
 
                 operations.multi();
 
+                //往用户的关注集合中添加被关注人的id
                 operations.opsForZSet().add(followeeKey, entityId, System.currentTimeMillis());
+                //往被关注人的粉丝集合中添加粉丝id
                 operations.opsForZSet().add(followerKey, userId, System.currentTimeMillis());
 
+                //执行事务
                 return operations.exec();
             }
         });
     }
 
+    /**
+     * 取消关注
+     * @param userId
+     * @param entityType
+     * @param entityId
+     */
     @Override
     public void unfollow(int userId, int entityType, int entityId) {
         redisTemplate.execute(new SessionCallback() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+
                 String followeeKey = RedisKeyUtil.getFolloweeKey(userId, entityType);
                 String followerKey = RedisKeyUtil.getFollowerKey(entityType, entityId);
 
+                //开启事务
                 operations.multi();
 
                 operations.opsForZSet().remove(followeeKey, entityId);

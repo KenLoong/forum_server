@@ -1,7 +1,6 @@
 package com.ken.forum_server.controller;
 
 import com.ken.forum_server.common.Result;
-import com.ken.forum_server.event.EventProducer;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -20,8 +19,7 @@ public class AdminController extends BaseController{
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private EventProducer eventProducer;
+
 
 
 //    @RequiresRoles({"admin"})
@@ -49,8 +47,11 @@ public class AdminController extends BaseController{
         Event event = new Event()
                 .setTopic(TOPIC_RESET_ES)
                 .setEntityId(uid);
-        eventProducer.fireEvent(event);
+        //用kafka异步处理
+//        eventProducer.fireEvent(event);
 
+        //用线程池异步处理
+//        EventHandler
         return new Result().success("重置成功");
     }
 }

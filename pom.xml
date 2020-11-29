@@ -75,11 +75,12 @@
             <version>1.2.73</version>
         </dependency>
 
-        <!--==============消息中间件==============-->
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
+        <!--因为kafka消耗太多内存，且不会维护，经常宕机，故放弃-->
+        <!--==============消息中间件:kafka==============-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.kafka</groupId>-->
+<!--            <artifactId>spring-kafka</artifactId>-->
+<!--        </dependency>-->
         <!--===================================-->
 
         <!--================搜索引擎==============-->
@@ -127,6 +128,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

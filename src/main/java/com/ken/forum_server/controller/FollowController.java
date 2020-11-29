@@ -1,9 +1,9 @@
 package com.ken.forum_server.controller;
 
 import com.ken.forum_server.annotation.TokenFree;
+import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dto.FollowDto;
-import com.ken.forum_server.event.EventProducer;
 import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
 import com.ken.forum_server.pojo.Event;
@@ -12,8 +12,6 @@ import com.ken.forum_server.service.FollowService;
 import com.ken.forum_server.service.UserService;
 import com.ken.forum_server.util.ConstantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -29,8 +27,8 @@ public class FollowController extends BaseController{
     private FollowService followService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private EventProducer eventProducer;
+//    @Autowired
+//    private EventProducer eventProducer;
 
     //关注
     @RequestMapping(path = "/follow", method = RequestMethod.POST)
@@ -39,6 +37,11 @@ public class FollowController extends BaseController{
         User user = userService.findUserById(getUserId(request));
         int entityId = followDto.getEntityId();
         int entityType = followDto.getEntityType();
+
+        //不可以自己关注自己
+        if (user.getId() == entityId){
+            return new Result();
+        };
 
         followService.follow(user.getId(), entityType, entityId);
 
@@ -49,7 +52,11 @@ public class FollowController extends BaseController{
                 .setEntityType(entityType)
                 .setEntityId(entityId)
                 .setEntityUserId(entityId);
-        eventProducer.fireEvent(event);
+
+        //往kafka中发送事件
+//        eventProducer.fireEvent(event);
+        //用线程池去发送事件
+        EventHandler.handleTask(event);
 
         // 返回粉丝数量
         long followerCount = followService.findFollowerCount(ConstantUtil.ENTITY_TYPE_USER, entityId);

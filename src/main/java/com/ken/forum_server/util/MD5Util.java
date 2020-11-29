@@ -1,7 +1,7 @@
 package com.ken.forum_server.util;
 
 import org.apache.shiro.crypto.hash.SimpleHash;
-import org.springframework.beans.factory.annotation.Value;
+import org.junit.Test;
 
 public class MD5Util {
 
@@ -18,5 +18,10 @@ public class MD5Util {
         int hashIterations = 5;//加密次数
         SimpleHash simpleHash = new SimpleHash(algorithmName,originPassword,SALT,hashIterations);
         return simpleHash+"";
+    }
+
+    @Test
+    public void t(){
+        System.out.println(MD5Util.md5Encryption("yonghuiAa"));
     }
 }

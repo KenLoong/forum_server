@@ -37,6 +37,11 @@ public interface CommentDao {
             " values(#{userId},#{entityType},#{entityId},#{targetId},#{content},#{status},#{createTime})")
     int insertComment(Comment comment);
 
+    /**
+     * 根据id查询评论
+     * @param entityId
+     * @return
+     */
     @Select("select * from comment where id = #{entityId}")
     @ResultMap("comment")
     Comment findCommentById(int entityId);

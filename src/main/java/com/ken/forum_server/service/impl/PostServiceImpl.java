@@ -3,10 +3,10 @@ package com.ken.forum_server.service.impl;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.dao.PostDao;
 import com.ken.forum_server.dao.UserDao;
-import com.ken.forum_server.event.EventProducer;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.Post;
 import com.ken.forum_server.pojo.User;
@@ -46,8 +46,8 @@ public class PostServiceImpl implements PostService {
     private UserDao userDao;
     @Autowired
     private LikeService likeService;
-    @Autowired
-    private EventProducer eventProducer;
+//    @Autowired
+//    private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -125,7 +125,9 @@ public class PostServiceImpl implements PostService {
                 .setUserId(post.getUserId())
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(post.getId());
-        eventProducer.fireEvent(event);
+        //用kafka
+//        eventProducer.fireEvent(event);
+        EventHandler.handleTask(event);
 
         // 计算帖子分数
         String redisKey = RedisKeyUtil.getPostScoreKey();
