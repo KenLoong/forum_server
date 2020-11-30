@@ -107,6 +107,13 @@
         </dependency>
         <!--===============缓存================-->
 
+        <!--七牛云sdk-->
+        <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>7.2.23</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

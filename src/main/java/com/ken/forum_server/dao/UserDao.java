@@ -13,7 +13,7 @@ public interface UserDao {
     @Insert("insert into user (username,password,email,gender,create_time,state,code) values(#{username},#{password},#{email},#{gender},#{createTime},#{state},#{code})")
     void addUser(User user);
 
-    @Select("select * from user where id = #{id} ")
+    @Select("select id , username , gender , create_time , avatar , state , rid from user where id = #{id} ")
     @Results(id = "user",value = {
             @Result(property = "id",column = "id"),
             @Result(property = "createTime",column = "create_time")

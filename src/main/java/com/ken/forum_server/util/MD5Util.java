@@ -22,6 +22,6 @@ public class MD5Util {
 
     @Test
     public void t(){
-        System.out.println(MD5Util.md5Encryption("yonghuiAa"));
+        System.out.println(MD5Util.md5Encryption("123456789"));
     }
 }

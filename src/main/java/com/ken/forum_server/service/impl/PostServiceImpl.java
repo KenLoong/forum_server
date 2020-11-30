@@ -176,8 +176,6 @@ public class PostServiceImpl implements PostService {
 
             postVo.setPost(post);
             User user = userDao.findUserById(post.getUserId());
-            user.setAvatar("/img/avatar/"+user.getAvatar());
-            user.setPassword(null);
             postVo.setUser(user);
             postVos.add(postVo);
         }

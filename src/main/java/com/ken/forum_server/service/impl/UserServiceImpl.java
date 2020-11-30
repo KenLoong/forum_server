@@ -14,6 +14,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -32,11 +33,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     MailUtil mailUtil;
 
+    @Value("${qiniu.bucket.avatar.url}")
+    private String avatarBucketUrl;
+
 //    @Autowired
 //    EventProducer eventProducer;
 
 
-    private String uploadPath = "/static/img/avatar/";
+//    private String uploadPath = "/static/img/avatar/";
 
 
     @Override
@@ -107,7 +111,7 @@ public class UserServiceImpl implements UserService {
         user.setCreateTime(new Date());
         user.setCode(UUID.randomUUID().toString());
         user.setState(0);
-        user.setAvatar(uploadPath+"5.jpg");
+        user.setAvatar("http://"+avatarBucketUrl+"default.jpg");
 
         //触发注册事件
         Event event = new Event()
@@ -128,8 +132,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getInfo(int id) {
         User user = userDao.findUserById(id);
-        user.setAvatar("/img/avatar/"+user.getAvatar());
-        user.setPassword(null);
         return new Result().success(user);
     }
 
@@ -152,17 +154,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(Integer userId) {
         User user = userDao.findUserById(userId);
-        user.setAvatar("/img/avatar/"+user.getAvatar());
-        user.setPassword(null);
         return user;
 
     }
 
     @Override
     public User findUserByName(String toName) {
-        User user = userDao.findUserByName(toName);
-        user.setAvatar("/img/avatar/"+user.getAvatar());
-        return user;
+        return userDao.findUserByName(toName);
     }
 
     @Override
