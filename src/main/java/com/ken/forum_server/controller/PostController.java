@@ -1,5 +1,6 @@
 package com.ken.forum_server.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ken.forum_server.annotation.TokenFree;
 import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
@@ -12,10 +13,22 @@ import com.ken.forum_server.pojo.Post;
 import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.*;
 import com.ken.forum_server.util.ConstantUtil;
+import com.ken.forum_server.util.JsonUtil;
 import com.ken.forum_server.util.RedisKeyUtil;
 import com.ken.forum_server.vo.*;
+import com.qiniu.common.QiniuException;
+import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
+import com.qiniu.storage.BucketManager;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +48,9 @@ import static com.ken.forum_server.util.ConstantUtil.*;
 @RequestMapping("/post")
 public class PostController extends BaseController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PostController.class);
+
+
     @Autowired
     private PostService postService;
     @Autowired
@@ -52,6 +68,21 @@ public class PostController extends BaseController {
 //    private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Value("${qiniu.key.access}")
+    private String accessKey;
+
+    @Value("${qiniu.key.secret}")
+    private String secretKey;
+
+    @Value("${qiniu.bucket.picture.name}")
+    private String pictureBucketName;
+
+    @Value("${qiniu.bucket.picture.url}")
+    private String pictureBucketUrl;
+
+
+
 
     /**
      * 发表推文
@@ -269,13 +300,11 @@ public class PostController extends BaseController {
     }
 
 
-
-
-    /**
+    /**弃用
      *elementUI的上传文件是把每个文件都发一次请求的
      * @return
      */
-    @PostMapping("/upload")
+   /* @PostMapping("/upload")
     public Result upload(MultipartFile file, UploadData uploadData) throws IOException {
 
 //        String filePath = "src/main/resources/static/img/photo/";
@@ -302,8 +331,88 @@ public class PostController extends BaseController {
         pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
 
         return new Result().success("图片上传成功");
+    }*/
+
+    @PostMapping("/upload")
+    public Result upload(@RequestParam(value = "image", required = false)MultipartFile file) throws IOException {
+
+        String fileName = file.getOriginalFilename();
+        //获取图片后缀名
+        String suffix = fileName.substring(fileName.lastIndexOf(".")+1);
+        if (StringUtils.isEmpty(suffix)) {
+            return new Result().fail("上传照片格式不对！");
+        }
+
+        //为图片名取随机名
+        fileName = UUID.randomUUID().toString()+"."+suffix;
+
+        //上传次数
+        int uploadTimes = 0;
+
+        //最多上传3次
+        for ( uploadTimes = 1; uploadTimes <= 3; uploadTimes++) {
+            logger.info(String.format("开始第%d次上传[%s].", uploadTimes, fileName));
+
+            // 设置响应信息
+            StringMap policy = new StringMap();
+            //意思是上传成功后给我传0状态码
+            policy.put("returnBody", JsonUtil.getJSONString(0));
+            // 生成上传凭证
+            Auth auth = Auth.create(accessKey, secretKey);
+            String uploadToken = auth.uploadToken(pictureBucketName, fileName, 3600, policy);
+            // 指定上传机房(华南)
+            UploadManager manager = new UploadManager(new Configuration(Zone.huanan()));
+            try {
+                // 开始上传图片
+                Response response = manager.put(
+                        file.getBytes(), fileName, uploadToken, null, "image/" + suffix, false);
+                // 处理响应结果
+                JSONObject json = JSONObject.parseObject(response.bodyString());
+                if (json == null || json.get("code") == null || !json.get("code").toString().equals("0")) {
+                    logger.info(String.format("第%d次上传失败[%s].", uploadTimes, fileName));
+                } else {
+                    logger.info(String.format("第%d次上传成功[%s].", uploadTimes, fileName));
+                    break; //上传成功就直接退出
+                }
+            } catch (QiniuException e) {
+                logger.info(String.format("第%d次上传失败[%s].", uploadTimes, fileName));
+            }
+        }
+
+        if (uploadTimes > 3){
+            return new Result().fail("图片上传失败");
+        }
+
+
+        //修改数据库数据(改用七牛云存储图片，图片地址直接放在推文里,不再存数据库)
+        // pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
+
+        logger.info("上传图片路径为："+"http://"+pictureBucketUrl + "/" + fileName);
+
+        //返回图片访问路径
+        return new Result().success("http://"+pictureBucketUrl + "/" + fileName);
     }
 
+
+    @PostMapping("/delimg")
+    public Result deletePicture(@RequestParam(value = "url" , required = true) String delUrl){
+        Auth auth = Auth.create(accessKey, secretKey);
+        Configuration config = new Configuration(Zone.huanan());
+        BucketManager bucketMgr = new BucketManager(auth, config);
+        //指定需要删除的文件，和文件所在的存储空间
+        String bucketName = pictureBucketName;
+        String filename = delUrl.substring(delUrl.lastIndexOf("/") + 1);
+        logger.info("删除图片名为："+filename);
+        try {
+            Response delete = bucketMgr.delete(bucketName, filename);
+            delete.close();
+        }catch (Exception e){
+            e.printStackTrace();
+            return new Result().fail("删除失败");
+        }
+
+        return new Result().success("删除成功");
+    }
 
     // 置顶
     @RequestMapping(path = "/top", method = RequestMethod.GET)

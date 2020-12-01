@@ -93,6 +93,9 @@ qiniu:
     avatar:
       name: ken-forum-avatar
       url: qkllefrb5.hn-bkt.clouddn.com
+    picture:
+      name: ken-forum-picture
+      url: qklldh8j3.hn-bkt.clouddn.com
 
 
 
