@@ -10,7 +10,7 @@ public interface UserDao {
     @Select("select * from user where username = #{username} ")
     User findUserByUsername(String username);
 
-    @Insert("insert into user (username,password,email,gender,create_time,state,code) values(#{username},#{password},#{email},#{gender},#{createTime},#{state},#{code})")
+    @Insert("insert into user (username,password,email,gender,create_time,state,code,avatar) values(#{username},#{password},#{email},#{gender},#{createTime},#{state},#{code},#{avatar})")
     void addUser(User user);
 
     @Select("select id , username , gender , create_time , avatar , state , rid from user where id = #{id} ")
@@ -20,7 +20,7 @@ public interface UserDao {
     })
     User findUserById(Integer id);
 
-    @Select("select id from user where email = #{email} ")
+    @Select("select id,username,email from user where email = #{email} ")
     @ResultMap("user")
     User findUserByEmail(String email);
 
@@ -35,4 +35,7 @@ public interface UserDao {
 
     @Update("update user set state = 0 , code = #{code} where id = #{id}")
     void deleteUserById(int uid , String code);
+
+    @Update("update user set password = #{password} where id = #{id}")
+    void updatePassword(User user);
 }

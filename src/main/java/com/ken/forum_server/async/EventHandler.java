@@ -36,6 +36,7 @@ public class EventHandler {
         esTopics.add(ConstantUtil.TOPIC_RESET_ES);
         //发送邮件的任务
         emailTopics.add(ConstantUtil.TOPIC_REGISTER);
+        emailTopics.add(ConstantUtil.TOPIC_FORGET);
 
     }
 
@@ -48,7 +49,7 @@ public class EventHandler {
             executorService.submit(new EsTask(event));
         }else if (emailTopics.contains(event.getTopic())){
             //邮件任务
-            executorService.submit(new EmailTask(event));
+            executorService.execute(new EmailTask(event));
         }
     }
 

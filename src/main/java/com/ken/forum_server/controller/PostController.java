@@ -334,7 +334,7 @@ public class PostController extends BaseController {
     }*/
 
     @PostMapping("/upload")
-    public Result upload(@RequestParam(value = "image", required = false)MultipartFile file) throws IOException {
+    public Result upload(@RequestParam(value = "image", required = true)MultipartFile file) throws IOException {
 
         String fileName = file.getOriginalFilename();
         //获取图片后缀名

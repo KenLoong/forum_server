@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,15 +112,21 @@ public class UserServiceImpl implements UserService {
         user.setCreateTime(new Date());
         user.setCode(UUID.randomUUID().toString());
         user.setState(0);
-        user.setAvatar("http://"+avatarBucketUrl+"default.jpg");
+        user.setAvatar("http://"+avatarBucketUrl+"/default.jpg");
 
-        //触发注册事件
-        Event event = new Event()
-                .setTopic(TOPIC_REGISTER)
-                .setData("user",user);
-        //用kafka
-//        eventProducer.fireEvent(event);
-        EventHandler.handleTask(event);
+//        //触发注册事件
+//        Event event = new Event()
+//                .setTopic(TOPIC_REGISTER)
+//                .setData("user",user);
+//        //用kafka
+////        eventProducer.fireEvent(event);
+//        EventHandler.handleTask(event);
+        try {
+            mailUtil.registerMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return new Result().fail(e.getMessage());
+        }
 
 
         //发送邮件
@@ -166,6 +173,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(int uid) {
         userDao.deleteUserById(uid , "ssssdddd");
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        return userDao.findUserByEmail(email);
+    }
+
+    @Override
+    public void updatePassword(User user) {
+        userDao.updatePassword(user);
     }
 
 }

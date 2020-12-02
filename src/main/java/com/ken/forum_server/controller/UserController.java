@@ -2,17 +2,17 @@ package com.ken.forum_server.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ken.forum_server.annotation.TokenFree;
+import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
+import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.FollowService;
 import com.ken.forum_server.service.LikeService;
 import com.ken.forum_server.service.PostService;
 import com.ken.forum_server.service.UserService;
-import com.ken.forum_server.util.ConstantUtil;
-import com.ken.forum_server.util.JsonUtil;
-import com.ken.forum_server.util.JwtUtil;
+import com.ken.forum_server.util.*;
 import com.ken.forum_server.vo.PaginationVo;
 import com.ken.forum_server.vo.PostVo;
 import com.qiniu.common.QiniuException;
@@ -30,13 +30,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.ken.forum_server.util.ConstantUtil.TOPIC_FORGET;
+import static com.ken.forum_server.util.ConstantUtil.TOPIC_REGISTER;
 
 @RestController
 @RequestMapping("/user")
@@ -65,6 +68,9 @@ public class UserController extends BaseController{
 
     @Value("${qiniu.bucket.avatar.url}")
     private String avatarBucketUrl;
+
+    @Autowired
+    MailUtil mailUtil;
 
 
     /**
@@ -276,6 +282,48 @@ public class UserController extends BaseController{
         User user = userService.findUserById(uid);
         map.put("user",user);
         return new Result().success(map);
+    }
+
+
+    /**
+     * 忘记密码,往注册邮箱里发送新密码
+     * @param user
+     * @return
+     */
+    @TokenFree
+    @PostMapping("/forget")
+    public Result forgetPassword(@RequestBody User user) throws MessagingException {
+        String email = user.getEmail();
+        user =  userService.findUserByEmail(email);
+       if (user == null){
+           return new Result().fail("该邮箱尚未注册");
+       }
+
+       //创建新密码
+        String newPassword = UUID.randomUUID().toString().substring(0, 10);
+        newPassword.replace("-","v");
+
+        //对密码进行加密
+        String md5Pass = MD5Util.md5Encryption(newPassword);
+        user.setPassword(md5Pass);
+        //更新数据库密码
+        userService.updatePassword(user);
+
+        user.setPassword(newPassword);
+//        //触发忘记密码事件
+//        Event event = new Event()
+//                .setTopic(TOPIC_FORGET)
+//                .setData("user",user);
+//        //发送邮件
+//        EventHandler.handleTask(event);
+
+        /**
+         * 忘记密码
+         */
+        mailUtil.forgetMail(user.getEmail(),"忘记密码",user);
+
+
+        return new Result().success("");
     }
 
 

@@ -50,7 +50,12 @@ public class ConstantUtil {
     /**
      * 主题：注册
      */
-    public static final String TOPIC_REGISTER = "delete";
+    public static final String TOPIC_REGISTER = "register";
+
+    /**
+     * 主题：忘记密码
+     */
+    public static final String TOPIC_FORGET = "forget";
 
     /**
      * 系统用户ID

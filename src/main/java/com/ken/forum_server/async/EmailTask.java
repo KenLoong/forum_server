@@ -3,9 +3,11 @@ package com.ken.forum_server.async;
 import com.alibaba.fastjson.JSONObject;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.User;
+import com.ken.forum_server.util.ConstantUtil;
 import com.ken.forum_server.util.MailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.mail.MessagingException;
 import java.util.Map;
 
 /**
@@ -14,19 +16,48 @@ import java.util.Map;
 public class EmailTask implements Runnable {
 
     private Event event;
-    @Autowired
-    MailUtil mailUtil;
+
+    private MailUtil mailUtil = new MailUtil();
 
     public EmailTask(Event event){
         this.event = event;
     }
 
-
-    @Override
-    public void run() {
+    /**
+     * 注册
+     */
+    private void register()  {
         Map<String, Object> data = event.getData();
         User user = (User)data.get("user");
         //发送邮件
-        mailUtil.sendMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
+        try {
+            mailUtil.registerMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 忘记密码
+     */
+    private void forget() {
+        Map<String, Object> data = event.getData();
+        User user = (User)data.get("user");
+        //发送邮件
+        try {
+            mailUtil.forgetMail(user.getEmail(),"忘记密码",user);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void run() {
+       if (ConstantUtil.TOPIC_REGISTER.equals(event.getTopic())){
+           register();
+       }else if (ConstantUtil.TOPIC_FORGET.equals(event.getTopic())){
+           forget();
+       }
     }
 }

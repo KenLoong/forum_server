@@ -3,6 +3,7 @@ package com.ken.forum_server;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
 
@@ -13,6 +14,7 @@ import javax.annotation.PostConstruct;
  *                  elasticsearch
  *
  */
+@EnableAsync
 @SpringBootApplication
 @MapperScan(basePackages = "com.ken.forum_server.dao")
 public class ForumServerApplication {
