@@ -17,7 +17,8 @@ public class EmailTask implements Runnable {
 
     private Event event;
 
-    private MailUtil mailUtil = new MailUtil();
+    @Autowired
+    private MailUtil mailUtil;
 
     public EmailTask(Event event){
         this.event = event;
@@ -29,6 +30,8 @@ public class EmailTask implements Runnable {
     private void register()  {
         Map<String, Object> data = event.getData();
         User user = (User)data.get("user");
+
+        System.out.println(mailUtil);
         //发送邮件
         try {
             mailUtil.registerMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());

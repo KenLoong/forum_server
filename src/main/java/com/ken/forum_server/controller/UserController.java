@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ken.forum_server.annotation.TokenFree;
 import com.ken.forum_server.async.EventHandler;
 import com.ken.forum_server.common.Result;
+import com.ken.forum_server.dto.NewPassDto;
 import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
 import com.ken.forum_server.pojo.Event;
@@ -100,8 +101,20 @@ public class UserController extends BaseController{
     }
 
 
+    @TokenFree
     @RequestMapping("/test")
     public Result test(){
+
+        User user = new User();
+        user.setEmail("l067408710@qq.com");
+        user.setUsername("测试啊啊啊");
+               //触发注册事件
+        Event event = new Event()
+                .setTopic(TOPIC_REGISTER)
+                .setData("user",user);
+
+        //用线程池异步发送邮件
+        EventHandler.handleTask(event);
         return new Result();
     }
 
@@ -189,8 +202,8 @@ public class UserController extends BaseController{
      * @return
      * @throws IOException
      */
-    @PostMapping("/avatar")
-/*
+/*    @PostMapping("/avatar")
+
     public Result updateAvatar(MultipartFile file) throws IOException {
 //        String filePath = "static/img/avatar/";
 
@@ -322,6 +335,35 @@ public class UserController extends BaseController{
          */
         mailUtil.forgetMail(user.getEmail(),"忘记密码",user);
 
+
+        return new Result().success("");
+    }
+
+
+    /**
+     * 修改密码
+     * @return
+     */
+    @PostMapping("/resetPass")
+    public Result resetPassword(@RequestBody NewPassDto newPassDto){
+        int userId = getUserId(request);
+        //取出数据库旧密码
+        String dbOldPass = userService.getUserPasswordById(userId);
+
+        String oldpass = newPassDto.getOldpass();
+        oldpass  = MD5Util.md5Encryption(oldpass);
+
+        if (!dbOldPass.equals(oldpass)){
+            return new Result().fail("原密码不正确！");
+        }
+
+        //修改新密码
+        String pass = newPassDto.getPass();
+        pass = MD5Util.md5Encryption(pass);
+        User user = new User();
+        user.setId(userId);
+        user.setPassword(pass);
+        userService.updatePassword(user);
 
         return new Result().success("");
     }

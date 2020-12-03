@@ -185,4 +185,9 @@ public class UserServiceImpl implements UserService {
         userDao.updatePassword(user);
     }
 
+    @Override
+    public String getUserPasswordById(int userId) {
+        return userDao.getPasswordById(userId);
+    }
+
 }

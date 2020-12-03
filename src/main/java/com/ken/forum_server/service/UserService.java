@@ -24,4 +24,7 @@ public interface UserService {
     User findUserByEmail(String eamil);
 
     void updatePassword(User user);
+
+    String getUserPasswordById(int userId);
+
 }

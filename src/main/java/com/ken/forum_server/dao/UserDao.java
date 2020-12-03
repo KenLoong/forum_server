@@ -38,4 +38,7 @@ public interface UserDao {
 
     @Update("update user set password = #{password} where id = #{id}")
     void updatePassword(User user);
+
+    @Select("select password from user where id = #{userId} ")
+    String getPasswordById(int userId);
 }
