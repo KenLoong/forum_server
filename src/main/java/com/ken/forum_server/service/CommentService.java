@@ -13,4 +13,6 @@ public interface CommentService {
     public int addComment(Comment comment);
 
     Comment findCommentById(int entityId);
+
+    String findCommentByIdAndType(int entityType, int entityId);
 }

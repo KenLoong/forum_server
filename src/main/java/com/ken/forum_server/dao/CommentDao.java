@@ -46,4 +46,13 @@ public interface CommentDao {
     @ResultMap("comment")
     Comment findCommentById(int entityId);
 
+    /**
+     * 查找评论的内容
+     * @param entityType
+     * @param entityId
+     * @return
+     */
+    @Select("select content from comment where  = #{entityId} and")
+    @ResultMap("comment")
+    String findCommentByIdAndType(int entityType, int entityId);
 }

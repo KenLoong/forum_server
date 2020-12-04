@@ -6,6 +6,8 @@ import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.util.ConstantUtil;
 import com.ken.forum_server.util.MailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
 import java.util.Map;
@@ -13,6 +15,8 @@ import java.util.Map;
 /**
  * 发送邮件的线程
  */
+@Component
+@Scope("prototype")
 public class EmailTask implements Runnable {
 
     private Event event;
@@ -20,7 +24,7 @@ public class EmailTask implements Runnable {
     @Autowired
     private MailUtil mailUtil;
 
-    public EmailTask(Event event){
+    public void setEvent(Event event){
         this.event = event;
     }
 

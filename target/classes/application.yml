@@ -23,7 +23,7 @@ spring:
       file-size-threshold: 20MB
 
 
-#redis-server.exe redis.windows.conf
+#         redis-server.exe redis.windows.conf
   redis:
     database: 11
     host: 127.0.0.1

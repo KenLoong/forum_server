@@ -29,6 +29,8 @@ public class FollowController extends BaseController{
     private UserService userService;
 //    @Autowired
 //    private EventProducer eventProducer;
+    @Autowired
+    private EventHandler eventHandler;
 
     //关注
     @RequestMapping(path = "/follow", method = RequestMethod.POST)
@@ -56,7 +58,7 @@ public class FollowController extends BaseController{
         //往kafka中发送事件
 //        eventProducer.fireEvent(event);
         //用线程池去发送事件
-        EventHandler.handleTask(event);
+        eventHandler.handleTask(event);
 
         // 返回粉丝数量
         long followerCount = followService.findFollowerCount(ConstantUtil.ENTITY_TYPE_USER, entityId);

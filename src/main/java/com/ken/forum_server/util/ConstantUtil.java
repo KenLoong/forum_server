@@ -33,6 +33,11 @@ public class ConstantUtil {
     public static final String TOPIC_FOLLOW = "follow";
 
     /**
+     * 系统通知
+     */
+    public static final String TOPIC_SYSTEM = "system";
+
+    /**
      * 主题: 发帖
      */
     public static final String TOPIC_PUBLISH = "publish";

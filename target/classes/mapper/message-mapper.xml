@@ -24,6 +24,7 @@
     </update>
 
 
+    <!--查询评论的消息-->
     <select id="selectLatestNotice" resultType="Message">
         select <include refid="selectFields"></include>
         from message
@@ -44,6 +45,13 @@
         and conversation_id = #{topic}
     </select>
 
+    <select id="selectNoticeAllCount" resultType="int">
+        select count(id) from message
+        where from_id = 1
+        and to_id = #{userId}
+        and conversation_id = #{topic}
+    </select>
+
     <select id="selectNoticeUnreadCount" resultType="int">
         select count(id) from message
         where status = 0
@@ -59,6 +67,16 @@
         from message
         where status != 2
         and from_id = 1
+        and to_id = #{userId}
+        and conversation_id = #{topic}
+        order by create_time desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="findAllMessage" resultType="Message">
+        select <include refid="selectFields"></include>
+        from message
+        where from_id = 1
         and to_id = #{userId}
         and conversation_id = #{topic}
         order by create_time desc

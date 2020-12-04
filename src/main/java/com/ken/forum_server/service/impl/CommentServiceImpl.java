@@ -55,4 +55,9 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.findCommentById(entityId);
     }
 
+    @Override
+    public String findCommentByIdAndType(int entityType, int entityId) {
+        return commentDao.findCommentByIdAndType(entityType,entityId);
+    }
+
 }

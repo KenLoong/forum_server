@@ -46,6 +46,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public int addMessage(Message message) {
+        System.out.println("执行了添加消息~~~！！！");
         return messageDao.insertMessage(message);
     }
 
@@ -59,9 +60,10 @@ public class MessageServiceImpl implements MessageService {
         return messageDao.selectLatestNotice(userId, topic);
     }
 
+    //查询某个主题消息的数量（）
     @Override
     public int findNoticeCount(int userId, String topic) {
-        return messageDao.selectNoticeCount(userId, topic);
+        return messageDao.selectNoticeAllCount(userId, topic);
     }
 
     @Override
@@ -72,5 +74,10 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<Message> findNotices(int userId, String topic, int offset, int limit) {
         return messageDao.selectNotices(userId, topic, offset, limit);
+    }
+
+    @Override
+    public List<Message> findAllMessage(Integer userId, String topic, int offset, int limit) {
+        return messageDao.findAllMessage(userId,topic,offset,limit);
     }
 }

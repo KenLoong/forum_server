@@ -7,6 +7,8 @@ import com.ken.forum_server.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import static com.ken.forum_server.util.ConstantUtil.SYSTEM_USER_ID;
 /**
  * 发送通知的线程
  */
+@Component
+@Scope("prototype")
 public class MessageTask implements Runnable {
 
     private Event event;
@@ -25,13 +29,16 @@ public class MessageTask implements Runnable {
     @Autowired
     private MessageService messageService;
 
-    public MessageTask(Event event){
+    public void setEvent(Event event){
         this.event = event;
     }
 
     @Override
     public void run() {
         logger.info("任务主题："+event.getTopic());
+
+        //自己不通知自己
+        if (event.getUserId() == event.getEntityUserId())return;
 
         // 发送站内通知
         Message message = new Message();
@@ -46,6 +53,7 @@ public class MessageTask implements Runnable {
         content.put("entityType", event.getEntityType());
         content.put("entityId", event.getEntityId());
 
+        //把data的数据放入消息内容
         if (!event.getData().isEmpty()) {
             for (Map.Entry<String, Object> entry : event.getData().entrySet()) {
                 content.put(entry.getKey(), entry.getValue());

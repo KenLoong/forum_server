@@ -2,8 +2,9 @@ package com.ken.forum_server.async;
 
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.util.ConstantUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,10 +14,11 @@ import java.util.concurrent.Executors;
 /**
  * 异步处理任务
  */
+@Component
 public class EventHandler {
 
-    //不允许有实例
-    private EventHandler(){}
+    @Autowired
+    private ApplicationContext applicationContext;
 
     private static ExecutorService executorService;
 
@@ -40,16 +42,22 @@ public class EventHandler {
 
     }
 
-    public static void handleTask(Event event){
+    public void handleTask(Event event){
         if (messageTopics.contains(event.getTopic())){
             //通知任务
-            executorService.submit(new MessageTask(event));
+            MessageTask task = applicationContext.getBean(MessageTask.class);
+            task.setEvent(event);
+            executorService.submit(task);
         }else if (esTopics.contains(event.getTopic())){
             //有关es库的任务
-            executorService.submit(new EsTask(event));
+            EsTask task = applicationContext.getBean(EsTask.class);
+            task.setEvent(event);
+            executorService.submit(task);
         }else if (emailTopics.contains(event.getTopic())){
             //邮件任务
-            executorService.execute(new EmailTask(event));
+            EmailTask task = applicationContext.getBean(EmailTask.class);
+            task.setEvent(event);
+            executorService.execute(task);
         }
     }
 

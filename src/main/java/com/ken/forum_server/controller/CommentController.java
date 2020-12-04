@@ -30,6 +30,8 @@ public class CommentController extends BaseController {
     private PostService postService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private EventHandler eventHandler;
 
     /**
      * 评论
@@ -38,12 +40,12 @@ public class CommentController extends BaseController {
      */
     @PostMapping("/add")
     public Result comment(@RequestBody Comment comment){
+
         int userId = getUserId(request);
         comment.setUserId(userId);
         comment.setStatus(0);
         comment.setCreateTime(new Date());
         commentService.addComment(comment);
-
 
         // 触发评论事件
         Event event = new Event()
@@ -51,7 +53,8 @@ public class CommentController extends BaseController {
                 .setUserId(userId)
                 .setEntityType(comment.getEntityType())
                 .setEntityId(comment.getEntityId())
-                .setData("postId", comment.getPostId());
+                .setData("postId", comment.getPostId())
+                .setData("content",comment.getContent());
 
         if (comment.getEntityType() == ENTITY_TYPE_POST) { //评论帖子
             Post target = postService.findPostById(comment.getEntityId());
@@ -63,8 +66,8 @@ public class CommentController extends BaseController {
 
         //发送事件(kafka)
         //eventProducer.fireEvent(event);
-        //异步发送事件(用线程池)
-        EventHandler.handleTask(event);
+        //异步发送事件(用线程池,发送回复通知)
+        eventHandler.handleTask(event);
 
 
         //如果评论了帖子，则需要更新es库中评论数量
@@ -79,7 +82,7 @@ public class CommentController extends BaseController {
             //kafka任务
 //            eventProducer.fireEvent(event);
             //用线程池异步
-            EventHandler.handleTask(event);
+            eventHandler.handleTask(event);
 
             // 计算帖子分数
             String redisKey = RedisKeyUtil.getPostScoreKey();

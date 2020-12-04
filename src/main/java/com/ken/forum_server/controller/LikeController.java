@@ -29,8 +29,15 @@ public class LikeController extends BaseController{
 //    private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private EventHandler eventHandler;
 
 
+    /**
+     * 点赞或取消点赞
+     * @param likeDto
+     * @return
+     */
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
     public Result like(@RequestBody LikeDto likeDto) {
@@ -61,10 +68,11 @@ public class LikeController extends BaseController{
                     .setData("postId", likeDto.getPostId());
 
             //用kafka发送事件
-//            eventProducer.fireEvent(event);
-            EventHandler.handleTask(event);
+            //eventProducer.fireEvent(event);
+            eventHandler.handleTask(event);
         }
 
+        //点赞的是帖子
         if (likeDto.getEntityType() == ENTITY_TYPE_POST){
             // 计算帖子分数
             String redisKey = RedisKeyUtil.getPostScoreKey();

@@ -48,7 +48,8 @@ public class UserController extends BaseController{
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-
+    @Autowired
+    private EventHandler eventHandler;
     @Autowired
     private UserService userService;
     @Autowired
@@ -114,7 +115,7 @@ public class UserController extends BaseController{
                 .setData("user",user);
 
         //用线程池异步发送邮件
-        EventHandler.handleTask(event);
+        eventHandler.handleTask(event);
         return new Result();
     }
 

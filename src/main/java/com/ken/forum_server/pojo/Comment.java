@@ -11,7 +11,7 @@ public class Comment implements Serializable {
 
     private int id;
     private int userId;
-    private int entityType; //
+    private int entityType; //被评论实体的类型  1-帖子  2-评论
     private int entityId;
     private int targetId;
     private String content;

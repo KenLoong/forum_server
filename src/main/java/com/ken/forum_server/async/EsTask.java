@@ -12,12 +12,16 @@ import com.ken.forum_server.util.MailUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * 操作es索引库的线程
  */
+@Component
+@Scope("prototype")
 public class EsTask implements Runnable {
 
     private Event event;
@@ -30,8 +34,7 @@ public class EsTask implements Runnable {
     @Autowired
     private PostDao postDao;
 
-
-    public EsTask(Event event){
+    public void setEvent(Event event){
         this.event = event;
     }
 
@@ -70,7 +73,7 @@ public class EsTask implements Runnable {
             return;
         }
 
-        logger.info("消费任务："+event.getTopic());
+        logger.info("es索引库消费任务："+event.getTopic());
         switch (event.getTopic()){
             case ConstantUtil.TOPIC_PUBLISH : updateEs();break;
             case ConstantUtil.TOPIC_DELETE : deleteEs();break;

@@ -50,6 +50,8 @@ public class PostServiceImpl implements PostService {
 //    private EventProducer eventProducer;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private EventHandler eventHandler;
 
     @Value("${caffeine.posts.max-size}")
     private int maxSize;
@@ -127,7 +129,7 @@ public class PostServiceImpl implements PostService {
                 .setEntityId(post.getId());
         //用kafka
 //        eventProducer.fireEvent(event);
-        EventHandler.handleTask(event);
+        eventHandler.handleTask(event);
 
         // 计算帖子分数
         String redisKey = RedisKeyUtil.getPostScoreKey();

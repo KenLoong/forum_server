@@ -34,8 +34,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,7 +48,8 @@ public class PostController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
-
+    @Autowired
+    private EventHandler eventHandler;
     @Autowired
     private PostService postService;
     @Autowired
@@ -429,7 +428,7 @@ public class PostController extends BaseController {
                 .setEntityId(id);
         //用kafka
 //        eventProducer.fireEvent(event);
-        EventHandler.handleTask(event);
+        eventHandler.handleTask(event);
 
         return new Result().success("");
     }
@@ -449,7 +448,7 @@ public class PostController extends BaseController {
                 .setEntityId(id);
         //用kafka
 //        eventProducer.fireEvent(event);
-        EventHandler.handleTask(event);
+        eventHandler.handleTask(event);
 
         // 计算帖子分数
         String redisKey = RedisKeyUtil.getPostScoreKey();
@@ -474,7 +473,7 @@ public class PostController extends BaseController {
         //用kafka
 //        eventProducer.fireEvent(event);
 
-        EventHandler.handleTask(event);
+        eventHandler.handleTask(event);
         return new Result().success("");
     }
 
