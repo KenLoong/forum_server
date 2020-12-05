@@ -21,11 +21,16 @@ import javax.servlet.http.HttpServletRequest;
 public class BaseController {
 
     @Autowired
-    HttpServletRequest request;
+    public HttpServletRequest request;
 
     public int getUserId(HttpServletRequest request){
         String token = request.getHeader(JwtUtil.HEADER_TOKEN_KEY);
         return Integer.parseInt(JwtUtil.getToken(token).getClaim("id").asString());
+    }
+
+    public String getUsername(){
+        String token = request.getHeader(JwtUtil.HEADER_TOKEN_KEY);
+        return JwtUtil.getToken(token).getClaim("username").asString();
     }
 
     public boolean isLogin(HttpServletRequest request){

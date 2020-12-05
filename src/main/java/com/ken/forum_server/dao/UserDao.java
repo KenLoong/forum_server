@@ -4,6 +4,8 @@ import com.ken.forum_server.pojo.User;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserDao {
 
@@ -41,4 +43,6 @@ public interface UserDao {
 
     @Select("select password from user where id = #{userId} ")
     String getPasswordById(int userId);
+
+    List<User> findUserByIds(@Param("ids") List<Integer> ids);
 }

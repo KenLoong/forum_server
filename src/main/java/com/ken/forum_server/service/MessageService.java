@@ -33,4 +33,6 @@ public interface MessageService {
     public List<Message> findNotices(int userId, String topic, int offset, int limit) ;
 
     List<Message> findAllMessage(Integer id, String topicComment, int offset, int limit);
+
+    List<Integer> findChatedUsersIds(int userId);
 }

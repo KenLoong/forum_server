@@ -80,4 +80,9 @@ public class MessageServiceImpl implements MessageService {
     public List<Message> findAllMessage(Integer userId, String topic, int offset, int limit) {
         return messageDao.findAllMessage(userId,topic,offset,limit);
     }
+
+    @Override
+    public List<Integer> findChatedUsersIds(int userId) {
+        return messageDao.selectChatedUsersIds(userId);
+    }
 }

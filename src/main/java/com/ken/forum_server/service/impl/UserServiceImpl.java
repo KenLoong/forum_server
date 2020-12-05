@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.ken.forum_server.util.ConstantUtil.TOPIC_REGISTER;
 
@@ -45,45 +42,66 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Result login(User user) {
+    public Map<String,Object> login(User user) {
+        Map<String,Object> map = new HashMap<>();
         if (user.getUsername() == null || user.getUsername().length() > 20){
-            return new Result(101,"用户名不可为空且长度不可超过20");
+            map.put("state",false);
+            map.put("result",new Result(101,"用户名不可为空且长度不可超过20"));
+            return map;
         }
 
         if (user.getPassword() == null || user.getPassword().length() == 0 ){
-            return new Result(102,"密码不可为空");
+            map.put("state",false);
+            map.put("result",new Result(102,"密码不可为空"));
+            return map;
         }
 
         User dbUser = userDao.findUserByUsername(user.getUsername());
         if( dbUser  == null){
-            return new Result(102,"用户不存在！");
+            map.put("state",false);
+            map.put("result",new Result(102,"用户不存在！"));
+            return map;
+
         }
 
         String encryption = MD5Util.md5Encryption(user.getPassword());
         if (!encryption.equals(dbUser.getPassword())){
-            return new Result(103,"用户名或密碼错误！");
+            map.put("state",false);
+            map.put("result",new Result(103,"用户名或密碼错误！"));
+            return map;
+
         }
 
         if (dbUser.getState() == 0){
-            return new Result(104,"您尚未激活账号，请往注册邮箱处点击链接激活");
+            map.put("state",false);
+            map.put("result",new Result(104,"您尚未激活账号，请往注册邮箱处点击链接激活"));
+            return map;
+
         }
 
         //生成token
-        Map<String,String> map = new HashMap<>();
-        map.put("username",user.getUsername());
-        map.put("id",dbUser.getId()+"");
+        Map<String,String> tokenMap = new HashMap<>();
+        tokenMap.put("username",user.getUsername());
+        tokenMap.put("id",dbUser.getId()+"");
 
-        JWToken jwToken = new JWToken(JwtUtil.getToken(map,user.getUsername()));
+        JWToken jwToken = new JWToken(JwtUtil.getToken(tokenMap,user.getUsername()));
         try {
             //让shiro缓存用户信息
             SecurityUtils.getSubject().login(jwToken);
         } catch (UnknownAccountException e) {
-            return new Result(101,"用户不存在");
-        } catch (IncorrectCredentialsException e) {
-            return new Result(102,"用户名或密码错误");
-        }
+            map.put("state",false);
+            map.put("result",new Result(101,"用户不存在"));
+            return map;
 
-        return new Result().success("登陆成功",jwToken.getCredentials());
+        } catch (IncorrectCredentialsException e) {
+            map.put("state",false);
+            map.put("result",new Result(102,"用户名或密码错误"));
+            return map;
+
+        }
+        map.put("state",true);
+        map.put("token",jwToken.getCredentials());
+        return map;
     }
 
     @Override
@@ -188,6 +206,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getUserPasswordById(int userId) {
         return userDao.getPasswordById(userId);
+    }
+
+    @Override
+    public List<User> findUserByIds(List<Integer> ids) {
+        return userDao.findUserByIds(ids);
     }
 
 }

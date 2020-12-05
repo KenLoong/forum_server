@@ -9,10 +9,7 @@ import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
 import com.ken.forum_server.pojo.Event;
 import com.ken.forum_server.pojo.User;
-import com.ken.forum_server.service.FollowService;
-import com.ken.forum_server.service.LikeService;
-import com.ken.forum_server.service.PostService;
-import com.ken.forum_server.service.UserService;
+import com.ken.forum_server.service.*;
 import com.ken.forum_server.util.*;
 import com.ken.forum_server.vo.PaginationVo;
 import com.ken.forum_server.vo.PostVo;
@@ -34,10 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.ken.forum_server.util.ConstantUtil.TOPIC_FORGET;
 import static com.ken.forum_server.util.ConstantUtil.TOPIC_REGISTER;
@@ -58,6 +52,8 @@ public class UserController extends BaseController{
     private FollowService followService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private MessageService messageService;
 
     @Value("${qiniu.key.access}")
     private String accessKey;
@@ -83,7 +79,30 @@ public class UserController extends BaseController{
     @TokenFree
     @RequestMapping("/login")
     public Result login(@RequestBody User user){
-        return userService.login(user);
+
+        Map<String, Object> loginMap = userService.login(user);
+        if (!(boolean)loginMap.get("state")){
+            return (Result)loginMap.get("result");
+        }
+
+        String token = (String) loginMap.get("token");
+        //登录成功后，查询跟当前用户聊过天的用户
+        List<User> userList = new ArrayList<>();
+        List<Integer> ids;
+
+        //查询消息中跟该用户聊过天的用户id集合
+        int userId = Integer.parseInt(JwtUtil.getToken(token).getClaim("id").asString());
+        ids = messageService.findChatedUsersIds(userId);
+        //查询聊天用户列表
+        if (ids.size() > 0){
+            userList = userService.findUserByIds(ids);
+        }
+
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("token",token);
+        map.put("userList",userList);
+        return new Result().success(map);
     }
 
     @TokenFree

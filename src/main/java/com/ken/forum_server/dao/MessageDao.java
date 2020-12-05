@@ -110,4 +110,13 @@ public interface MessageDao {
      * @return
      */
     List<Message> findAllMessage(Integer userId, String topic, int offset, int limit);
+
+    // 查询某个会话所包含的私信列表.
+    @Select("select distinct(from_id) " +
+            " from message " +
+            " where from_id != 1 " +
+            " and to_id = #{userId}" +
+            " order by create_time desc"
+    )
+    List<Integer> selectChatedUsersIds(int userId);
 }

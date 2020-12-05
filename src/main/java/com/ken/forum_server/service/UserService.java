@@ -3,9 +3,12 @@ package com.ken.forum_server.service;
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.pojo.User;
 
+import java.util.List;
+import java.util.Map;
+
 public interface UserService {
 
-    Result login(User user);
+    Map<String,Object> login(User user);
 
     Result register(User user);
 
@@ -27,4 +30,5 @@ public interface UserService {
 
     String getUserPasswordById(int userId);
 
+    List<User> findUserByIds(List<Integer> ids);
 }
