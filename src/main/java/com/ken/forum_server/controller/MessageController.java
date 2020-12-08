@@ -2,6 +2,7 @@ package com.ken.forum_server.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ken.forum_server.common.Result;
+import com.ken.forum_server.dto.ChatDto;
 import com.ken.forum_server.dto.LetterDto;
 import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
@@ -341,6 +342,7 @@ public class MessageController extends BaseController {
         return new Result().success(map);
     }
 
+    //获取系统通知
     @RequestMapping("/message/system")
     public Result getSystem(@RequestParam(defaultValue = "1") int currentPage){
         User user = userService.findUserById(getUserId(request));
@@ -378,6 +380,44 @@ public class MessageController extends BaseController {
             messageService.readMessage(ids);
         }
 
+        return new Result().success(map);
+    }
+
+    //获取与用户有消息来往的用户列表
+    @GetMapping("/message/getUsers")
+    public Result getUsers(){
+        int userId = getUserId(request);
+        //连接成功后，查询跟当前用户有消息来往的用户
+        List<User> userList = new ArrayList<>();
+        Set<Integer> toMeids = messageService.findChatToMeIds(userId);
+        Set<Integer> meToIds = messageService.findIChatToids(userId);
+        //查询聊天用户列表
+        //合并集合
+        toMeids.addAll(meToIds);
+
+        List<Integer> ids = new ArrayList<>(toMeids);
+        if (toMeids.size() > 0){
+            userList = userService.findUserByIds(ids);
+        }
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("userList",userList);
+
+        return new Result().success(map);
+    }
+
+    //获取与用户有消息来往的用户列表
+    @RequestMapping("/message/getSession")
+    public Result getSession(@RequestBody ChatDto chatDto){
+        int userId = getUserId(request);
+
+        int currentId = chatDto.getToId();
+
+        Map<String,Object> map = new HashMap<>();
+
+        //查询聊天记录
+        List<Message> chatList = messageService.findChatList(userId,currentId);
+        map.put("chatList",chatList);
         return new Result().success(map);
     }
 

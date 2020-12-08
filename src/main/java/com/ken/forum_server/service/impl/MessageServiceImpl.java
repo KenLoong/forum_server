@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class MessageServiceImpl implements MessageService {
@@ -82,7 +83,24 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<Integer> findChatedUsersIds(int userId) {
-        return messageDao.selectChatedUsersIds(userId);
+    public Set<Integer> findChatToMeIds(int userId) {
+        return messageDao.selectChatToMeIds(userId);
+    }
+
+    @Override
+    public List<Message> findChatList(int userId, int currentId) {
+        String conversation_id;
+        if (userId < currentId){
+            conversation_id = userId+"_"+currentId;
+        }else {
+            conversation_id = currentId+"_"+userId;
+        }
+
+        return messageDao.selectChatList(conversation_id);
+    }
+
+    @Override
+    public Set<Integer> findIChatToids(int userId) {
+        return messageDao.selectMeChatToIds(userId);
     }
 }

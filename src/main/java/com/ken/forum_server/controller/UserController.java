@@ -86,22 +86,9 @@ public class UserController extends BaseController{
         }
 
         String token = (String) loginMap.get("token");
-        //登录成功后，查询跟当前用户聊过天的用户
-        List<User> userList = new ArrayList<>();
-        List<Integer> ids;
-
-        //查询消息中跟该用户聊过天的用户id集合
-        int userId = Integer.parseInt(JwtUtil.getToken(token).getClaim("id").asString());
-        ids = messageService.findChatedUsersIds(userId);
-        //查询聊天用户列表
-        if (ids.size() > 0){
-            userList = userService.findUserByIds(ids);
-        }
-
 
         Map<String,Object> map = new HashMap<>();
         map.put("token",token);
-        map.put("userList",userList);
         return new Result().success(map);
     }
 

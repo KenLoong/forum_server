@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface MessageDao {
@@ -111,12 +112,32 @@ public interface MessageDao {
      */
     List<Message> findAllMessage(Integer userId, String topic, int offset, int limit);
 
-    // 查询某个会话所包含的私信列表.
+    // 查询向我发过消息的用户id
     @Select("select distinct(from_id) " +
             " from message " +
             " where from_id != 1 " +
-            " and to_id = #{userId}" +
+            " and to_id = #{userId} " +
             " order by create_time desc"
     )
-    List<Integer> selectChatedUsersIds(int userId);
+    Set<Integer> selectChatToMeIds(int userId);
+
+    // 查询我向对方发过消息的用户id
+    @Select("select distinct(to_id) " +
+            " from message " +
+            " where from_id = #{userId} " +
+            " order by create_time desc"
+    )
+    Set<Integer> selectMeChatToIds(int userId);
+
+    // 查询某个会话所包含的所有聊天记录
+    @Select("select * " +
+            " from message " +
+            " where from_id != 1 " +
+            " and conversation_id = #{conversation_id}" +
+            " order by create_time asc"
+    )
+    List<Message> selectChatList(String conversation_id);
+
+
+
 }

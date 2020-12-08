@@ -3,6 +3,7 @@ package com.ken.forum_server.service;
 import com.ken.forum_server.pojo.Message;
 
 import java.util.List;
+import java.util.Set;
 
 public interface MessageService {
 
@@ -34,5 +35,20 @@ public interface MessageService {
 
     List<Message> findAllMessage(Integer id, String topicComment, int offset, int limit);
 
-    List<Integer> findChatedUsersIds(int userId);
+    Set<Integer> findChatToMeIds(int userId);
+
+    /**
+     * 查找聊天记录
+     * @param userId
+     * @param currentId
+     * @return
+     */
+    List<Message> findChatList(int userId, int currentId);
+
+    /**
+     * 查询我向对方发过消息的用户ids
+     * @param userId
+     * @return
+     */
+    Set<Integer> findIChatToids(int userId);
 }
