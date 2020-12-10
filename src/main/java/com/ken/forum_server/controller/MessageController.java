@@ -417,7 +417,9 @@ public class MessageController extends BaseController {
 
         //查询聊天记录
         List<Message> chatList = messageService.findChatList(userId,currentId);
+        //消息记录
         map.put("chatList",chatList);
+
         return new Result().success(map);
     }
 

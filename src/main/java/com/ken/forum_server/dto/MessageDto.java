@@ -6,12 +6,8 @@ import java.util.Date;
 
 @Data
 public class MessageDto {
-    private String from_id;
-    private String to_id;
+    private String fromId;
+    private String toId;
     private String content;
-    private String from_avatar;
-    private String to_avatar;
-    private String from_name;
-    private String to_name;
-    private Date time;
+    private Date createTime;
 }

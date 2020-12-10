@@ -4,17 +4,14 @@ import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ken.forum_server.dto.MessageDto;
 import com.ken.forum_server.exception.CustomException;
 import com.ken.forum_server.exception.CustomExceptionCode;
 import com.ken.forum_server.pojo.Message;
-import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.MessageService;
 import com.ken.forum_server.service.UserService;
 import com.ken.forum_server.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,10 +29,8 @@ public class ChatEndpoint {
 
     //用来存储每一个客户端对象对应的ChatEndpoint对象
     private static Map<String,ChatEndpoint> onlineUsers = new ConcurrentHashMap<>();
-    @Autowired
-    private static MessageService messageService;
-    @Autowired
-    private static UserService userService;
+    public static MessageService messageService;
+    public static UserService userService;
 
     //和某个客户端连接对象，需要通过他来给客户端发送数据
     private Session session;
@@ -93,8 +88,8 @@ public class ChatEndpoint {
 //            //获取客户端发送来的数据  {"toName":"张三","message":"你好"}
             ObjectMapper mapper = new ObjectMapper();
             MessageDto messageDto = mapper.readValue(message, MessageDto.class);
-            int from_id = Integer.parseInt(messageDto.getFrom_id());
-            int to_id = Integer.parseInt(messageDto.getTo_id());
+            int from_id = Integer.parseInt(messageDto.getFromId());
+            int to_id = Integer.parseInt(messageDto.getToId());
             String conversation_id;
             if (from_id < to_id){
                 conversation_id = from_id+"_"+to_id;
@@ -106,12 +101,12 @@ public class ChatEndpoint {
             dbMessage.setConversationId(conversation_id);
             dbMessage.setFromId(from_id);
             dbMessage.setToId(to_id);
-            dbMessage.setCreateTime(new Date());
+            dbMessage.setCreateTime(messageDto.getCreateTime());
             dbMessage.setContent(messageDto.getContent());
             //录入到数据库
             messageService.addMessage(dbMessage);
 
-            ChatEndpoint chatEndpoint = onlineUsers.get(messageDto.getTo_id());
+            ChatEndpoint chatEndpoint = onlineUsers.get(messageDto.getToId());
             //对方不在线
             if (chatEndpoint == null)return;
             //将数据推送给指定的客户端
