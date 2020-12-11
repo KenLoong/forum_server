@@ -44,5 +44,5 @@
 - 采用element-ui,mavon-editor(富文本编辑)，bootstrap来美化用户视觉
 
 ## 项目预览图
-![a](https://segmentfault.com/img/bVcLv7j)
+![a](https://github.com/KenLoong/img_db/blob/main/20201210205131.png)
 
