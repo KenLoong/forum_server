@@ -67,8 +67,7 @@ public class LikeController extends BaseController{
                     .setEntityUserId(likeDto.getEntityUserId())
                     .setData("postId", likeDto.getPostId());
 
-            //用kafka发送事件
-            //eventProducer.fireEvent(event);
+
             eventHandler.handleTask(event);
         }
 

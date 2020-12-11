@@ -36,9 +36,8 @@ public class UserServiceImpl implements UserService {
 
 //    @Autowired
 //    EventProducer eventProducer;
-
-
-//    private String uploadPath = "/static/img/avatar/";
+    @Autowired
+    private EventHandler eventHandler;
 
 
     @Override
@@ -133,22 +132,12 @@ public class UserServiceImpl implements UserService {
         user.setAvatar("http://"+avatarBucketUrl+"/default.jpg");
 
 //        //触发注册事件
-//        Event event = new Event()
-//                .setTopic(TOPIC_REGISTER)
-//                .setData("user",user);
-//        //用kafka
-////        eventProducer.fireEvent(event);
-//        EventHandler.handleTask(event);
-        try {
-            mailUtil.registerMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return new Result().fail(e.getMessage());
-        }
+        Event event = new Event()
+                .setTopic(TOPIC_REGISTER)
+                .setData("user",user);
+        //异步执行（发送邮件）
+        eventHandler.handleTask(event);
 
-
-        //发送邮件
-        //mailUtil.sendMail(user.getEmail(),"欢迎来到ken社区",user.getCode(),user.getUsername());
         userDao.addUser(user);
         return new Result(200,"注册成功");
     }

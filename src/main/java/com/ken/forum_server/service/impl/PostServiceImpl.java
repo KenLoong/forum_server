@@ -144,11 +144,11 @@ public class PostServiceImpl implements PostService {
         List<Post> posts;
         int total = 0;
 
-        if (listMode == 0){
+        if (listMode == 0){ //最新推文
             logger.info("loading posts form DB");
             posts = postDao.list(offset);
             total = postDao.count();
-        }else {
+        }else {     //最热推文
             posts = postListCache.get(offset+"");
             total = postRowsCache.get(0);
 //            posts = postDao.listByHot(offset);

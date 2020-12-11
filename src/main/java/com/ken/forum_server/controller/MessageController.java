@@ -424,7 +424,7 @@ public class MessageController extends BaseController {
     }
 
 
-    //会话详情列表
+    /*//会话详情列表
     @RequestMapping(path = "/letter/detail/{conversationId}", method = RequestMethod.GET)
     public Result getLetterDetail(@PathVariable("conversationId") String conversationId,@RequestParam(defaultValue = "1") int currentPage) {
         int letterCount = messageService.findLetterCount(conversationId);
@@ -530,7 +530,7 @@ public class MessageController extends BaseController {
 
         return new Result().success(data);
     }
-
+*/
 
     private User getLetterTarget(String conversationId) {
         String[] ids = conversationId.split("_");

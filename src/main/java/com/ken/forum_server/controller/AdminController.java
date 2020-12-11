@@ -2,6 +2,7 @@ package com.ken.forum_server.controller;
 
 import com.ken.forum_server.common.Result;
 import com.ken.forum_server.pojo.Event;
+import com.ken.forum_server.service.ElasticSearchService;
 import com.ken.forum_server.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,15 @@ public class AdminController extends BaseController{
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ElasticSearchService elasticSearchService;
 
-
-//    @RequiresRoles({"admin"})
-//    @PostMapping("/clearEs")
-//    public Result clearEs(){
-//        elasticSearchService.deleteAll();
-//        return new Result().success("es库清空成功");
-//    }
+    @RequiresRoles({"admin"})
+    @RequestMapping("/clearEs")
+    public Result clearEs(){
+        elasticSearchService.deleteAll();
+        return new Result().success("es库清空成功");
+    }
 
     @RequiresRoles({"admin"})
     @GetMapping("/deleteUser")
