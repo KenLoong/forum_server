@@ -45,4 +45,14 @@
 
 ## 项目预览图
 ![a](https://github.com/KenLoong/img_db/blob/main/20201210205131.png)
+![a](https://github.com/KenLoong/img_db/blob/main/20201210205429.png)
+![a](https://github.com/KenLoong/img_db/blob/main/20201210210216.png)
+![a](https://github.com/KenLoong/img_db/blob/main/20201211104419.png)
+![a](https://github.com/KenLoong/img_db/blob/main/20201211104653.png)
+![a](https://github.com/KenLoong/img_db/blob/main/20201211110409.png)
+![a](https://github.com/KenLoong/img_db/blob/main/4505c657d808ff74a65eeadc7443ce0.png)
+![a](https://github.com/KenLoong/img_db/blob/main/80f2052c7750ab8b129ce8cbeea7f99.png)
+![a](https://github.com/KenLoong/img_db/blob/main/8cdbf646c19a75f5c3db3c165c3706e.png)
+![a](https://github.com/KenLoong/img_db/blob/main/db427cbf3ebf5098e84c269bae2233d.png)
+![a](https://github.com/KenLoong/img_db/blob/main/f4772a46986e910e5a400d64126dc06.png)
 
