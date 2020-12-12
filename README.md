@@ -13,6 +13,9 @@
 - 搜索
 - 聊天（类似网页版微信）
 
+## 前端工程地址：https://github.com/KenLoong/forum_front
+## 后端工程地址：https://github.com/KenLoong/forum_serve
+
 ## 后端技术栈
 - Springboot
 - Shiro
