@@ -46,24 +46,34 @@
 ## 项目预览图
 发表文章
 ![发表文章](https://github.com/KenLoong/img_db/blob/main/20201210205131.png)
+
 搜索文章
 ![搜索文章](https://github.com/KenLoong/img_db/blob/main/20201210205429.png)
+
 个人主页
 ![个人主页](https://github.com/KenLoong/img_db/blob/main/20201210210216.png)
+
 粉丝页面
 ![粉丝页面](https://github.com/KenLoong/img_db/blob/main/20201211104419.png)
+
 最热文章
 ![最热文章](https://github.com/KenLoong/img_db/blob/main/20201211104653.png)
+
 最新文章
 ![最新文章](https://github.com/KenLoong/img_db/blob/main/20201211110409.png)
+
 聊天
 ![聊天](https://github.com/KenLoong/img_db/blob/main/4505c657d808ff74a65eeadc7443ce0.png)
+
 评论、回复
 ![评论](https://github.com/KenLoong/img_db/blob/main/80f2052c7750ab8b129ce8cbeea7f99.png)
+
 设置页面
 ![设置页面](https://github.com/KenLoong/img_db/blob/main/8cdbf646c19a75f5c3db3c165c3706e.png)
+
 别人的主页
 ![别人的主页](https://github.com/KenLoong/img_db/blob/main/db427cbf3ebf5098e84c269bae2233d.png)
+
 消息中心
 ![消息中心](https://github.com/KenLoong/img_db/blob/main/f4772a46986e910e5a400d64126dc06.png)
 
