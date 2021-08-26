@@ -15,7 +15,7 @@ public class MD5Util {
     public static String md5Encryption(String originPassword){
         System.out.println("加密的盐值是！！"+SALT);
         String algorithmName = "MD5";//加密算法
-        int hashIterations = 5;//加密次数
+        int hashIterations = 2;//加密次数
         SimpleHash simpleHash = new SimpleHash(algorithmName,originPassword,SALT,hashIterations);
         return simpleHash+"";
     }

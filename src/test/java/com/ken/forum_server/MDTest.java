@@ -15,7 +15,8 @@ public class MDTest {
 
     @Test
     public void T() {
-        System.out.println(MD5Util.md5Encryption("5522150Aa#"));
+        String password = "123456";
+        System.out.println(MD5Util.md5Encryption(password));
     }
 
 }

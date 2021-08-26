@@ -92,6 +92,7 @@ public class UserController extends BaseController{
         return new Result().success(map);
     }
 
+
     @TokenFree
     @RequestMapping("/register")
     public Result register(@RequestBody User user)
@@ -241,8 +242,6 @@ public class UserController extends BaseController{
 
     }
 */
-
-
 
 
     /**

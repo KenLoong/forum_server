@@ -45,7 +45,7 @@ public class LikeController extends BaseController{
         User user = userService.findUserById(userId);
 
         // 点赞
-        likeService.like(user.getId(), likeDto.getEntityType(), likeDto.getEntityId(),likeDto.getEntityUserId());
+        likeService.like(user.getId(),likeDto.getEntityType(), likeDto.getEntityId(),likeDto.getEntityUserId());
 
         // 数量
         long likeCount = likeService.findEntityLikeCount(likeDto.getEntityType(), likeDto.getEntityId());
@@ -66,8 +66,6 @@ public class LikeController extends BaseController{
                     .setEntityId(likeDto.getEntityId())
                     .setEntityUserId(likeDto.getEntityUserId())
                     .setData("postId", likeDto.getPostId());
-
-
             eventHandler.handleTask(event);
         }
 

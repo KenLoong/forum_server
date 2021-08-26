@@ -37,6 +37,7 @@ public class FollowServiceImpl implements FollowService {
                 String followeeKey = RedisKeyUtil.getFolloweeKey(userId, entityType);
                 String followerKey = RedisKeyUtil.getFollowerKey(entityType, entityId);
 
+                //开启事务
                 operations.multi();
 
                 //往用户的关注集合中添加被关注人的id

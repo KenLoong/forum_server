@@ -372,7 +372,7 @@ public class MessageController extends BaseController {
         map.put("msgVos",msgVos);
         map.put("total",total);
 
-        //把消息设置为已读
+        //把消息设置为已读（status置1）
         List<Integer> ids = new ArrayList<>();
         messages.stream().forEach(message -> ids.add(message.getId()));
         //如果ID为空，Sql会有语法错误
@@ -406,7 +406,7 @@ public class MessageController extends BaseController {
         return new Result().success(map);
     }
 
-    //获取与用户有消息来往的用户列表
+    //查找聊天记录，需要对方的id
     @RequestMapping("/message/getSession")
     public Result getSession(@RequestBody ChatDto chatDto){
         int userId = getUserId(request);
