@@ -72,18 +72,18 @@ caffeine:
     expire-seconds: 180
 
 
+# 七牛云的配置
 qiniu:
   key:
-    access: V2agQcXe-v0jhGksaLTj36D2jpjnqYSKUf1rPyWB
-    secret: QT-BZC2Xx9w-R3rFE9n9rHJAu1nJ615sBttJx8_F
+    access: 
+    secret: 
   bucket:
     avatar:
-      name: ken-forum-avatar
-      url: qkllefrb5.hn-bkt.clouddn.com
+      name: 
+      url: 
     picture:
-      name: ken-forum-picture
-      url: qklldh8j3.hn-bkt.clouddn.com
-
+      name: 
+      url: 
 
 
 
