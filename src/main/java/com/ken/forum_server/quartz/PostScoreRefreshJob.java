@@ -47,9 +47,15 @@ public class PostScoreRefreshJob implements Job {
         }
     }
 
+    /**
+     * 用定时任务来计算帖子分数
+     * @param context
+     * @throws JobExecutionException
+     */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String redisKey = RedisKeyUtil.getPostScoreKey();
+        //获取key对应的集合
         BoundSetOperations operations = redisTemplate.boundSetOps(redisKey);
 
         if (operations.size() == 0) {
@@ -59,7 +65,7 @@ public class PostScoreRefreshJob implements Job {
 
         logger.info("[任务开始] 正在刷新帖子分数: " + operations.size());
         while (operations.size() > 0) {
-            //出栈
+            //将集合的元素从集合中移除，然后处理
             this.refresh((Integer) operations.pop());
         }
         logger.info("[任务结束] 帖子分数刷新完毕!");
