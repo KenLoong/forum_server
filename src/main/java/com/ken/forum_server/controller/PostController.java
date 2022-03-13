@@ -34,6 +34,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,7 +82,7 @@ public class PostController extends BaseController {
     @Value("${qiniu.bucket.picture.url}")
     private String pictureBucketUrl;
 
-
+    private String localPicUrl =  "http://localhost:8089/forum_server/img/photo/";;
 
 
     /**
@@ -299,15 +301,15 @@ public class PostController extends BaseController {
     }
 
 
-    /**弃用
+    /**
      *elementUI的上传文件是把每个文件都发一次请求的
      * @return
      */
-   /* @PostMapping("/upload")
-    public Result upload(MultipartFile file, UploadData uploadData) throws IOException {
+    @PostMapping("/upload")
+    public Result upload(@RequestParam(value = "image", required = true)MultipartFile file, UploadData uploadData) throws IOException {
 
-//        String filePath = "src/main/resources/static/img/photo/";
-        String filePath = "/usr/share/nginx/html/dist/img/photo/";
+        String filePath = "src/main/resources/static/img/photo/";
+//        String filePath = "/usr/share/nginx/html/dist/img/photo/";
         //判断文件夹目录是否存在
         File targetFile = new File(filePath);
         if (!targetFile.exists()) {
@@ -326,13 +328,15 @@ public class PostController extends BaseController {
         out.write(fileBytes);
         out.flush();
         out.close();
-        //修改数据库数据
-        pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
+//        //修改数据库数据
+//        pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
+        //返回图片访问路径
+        return new Result().success(localPicUrl+fileName);
+//        return new Result().success("图片上传成功");
+    }
 
-        return new Result().success("图片上传成功");
-    }*/
-
-    @PostMapping("/upload")
+   //云服务器的文章图片存储
+    /*@PostMapping("/upload")
     public Result upload(@RequestParam(value = "image", required = true)MultipartFile file) throws IOException {
 
         String fileName = file.getOriginalFilename();
@@ -384,15 +388,16 @@ public class PostController extends BaseController {
 
 
         //修改数据库数据(改用七牛云存储图片，图片地址直接放在推文里,不再存数据库)
-        // pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
+//         pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
 
         logger.info("上传图片路径为："+"http://"+pictureBucketUrl + "/" + fileName);
 
         //返回图片访问路径
         return new Result().success("http://"+pictureBucketUrl + "/" + fileName);
     }
+*/
 
-
+    //删除文章的图片接口
     @PostMapping("/delimg")
     public Result deletePicture(@RequestParam(value = "url" , required = true) String delUrl){
         Auth auth = Auth.create(accessKey, secretKey);

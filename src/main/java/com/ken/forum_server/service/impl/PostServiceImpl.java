@@ -12,6 +12,7 @@ import com.ken.forum_server.pojo.Post;
 import com.ken.forum_server.pojo.User;
 import com.ken.forum_server.service.LikeService;
 import com.ken.forum_server.service.PostService;
+import com.ken.forum_server.service.UserService;
 import com.ken.forum_server.util.RedisKeyUtil;
 import com.ken.forum_server.vo.PaginationVo;
 import com.ken.forum_server.vo.PostVo;
@@ -46,6 +47,8 @@ public class PostServiceImpl implements PostService {
     private UserDao userDao;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private UserService userService;
 //    @Autowired
 //    private EventProducer eventProducer;
     @Autowired
@@ -177,7 +180,9 @@ public class PostServiceImpl implements PostService {
 
 
             postVo.setPost(post);
-            User user = userDao.findUserById(post.getUserId());
+            User user = userService.findUserById(post.getUserId());
+//          User user = userDao.findUserById(post.getUserId());
+
             postVo.setUser(user);
             postVos.add(postVo);
         }
@@ -194,6 +199,9 @@ public class PostServiceImpl implements PostService {
     public Post findPostById(int pid) {
         //转义
         Post post = postDao.findById(pid);
+        if (post == null){
+            return null;
+        }
         post.setContent(HtmlUtils.htmlUnescape(post.getContent()));
         post.setTitle(HtmlUtils.htmlUnescape(post.getTitle()));
         return post;

@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 /**
  * 启动项目条件：    mysql
  *                  redis
- *                  kafka
  *                  elasticsearch
  *
  */

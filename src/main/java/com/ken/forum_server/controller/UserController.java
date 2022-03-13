@@ -30,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -40,6 +42,7 @@ import static com.ken.forum_server.util.ConstantUtil.TOPIC_REGISTER;
 @RequestMapping("/user")
 public class UserController extends BaseController{
 
+    private String avatarUrl = "http://localhost:8089/forum_server/img/avatar/";
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
@@ -136,12 +139,12 @@ public class UserController extends BaseController{
 
 
     /**
-     * 上传头像
+     * 上传头像，七牛云存储
      * @param file
      * @return
      * @throws IOException
      */
-    @PostMapping("/avatar")
+    /*@PostMapping("/avatar")
     public Result updateAvatar(MultipartFile file) throws IOException {
 
         //为文件生成随机名，这样更新头像的时候，文件名字不同，就不用担心缓存导致的头像没有变化
@@ -201,22 +204,21 @@ public class UserController extends BaseController{
         //返回用户头像访问路径
         return new Result().success("http://"+avatarBucketUrl + "/" + fileName);
 
-    }
+    }*/
 
-    //弃用
+    //本地存储头像
     /**
      * 上传头像
      * @param
      * @return
      * @throws IOException
      */
-/*    @PostMapping("/avatar")
-
+    @PostMapping("/avatar")
     public Result updateAvatar(MultipartFile file) throws IOException {
 //        String filePath = "static/img/avatar/";
 
-//        String filePath = "src/main/resources/static/img/avatar/";
-        String filePath = "/usr/share/nginx/html/dist/img/avatar/";
+        String filePath = "src/main/resources/static/img/avatar/";
+//        String filePath = "/usr/share/nginx/html/dist/img/avatar/";
         //获取用户id
         int userId = getUserId(request);
 
@@ -238,10 +240,10 @@ public class UserController extends BaseController{
         //修改数据库数据
         userService.upadteAvatar(userId,userId+suffix);
         //返回用户头像名
-        return new Result().success("/img/avatar/"+userId+suffix);
+//        return new Result().success("/img/avatar/"+userId+suffix);
+        return new Result().success(avatarUrl+userId+suffix);
 
     }
-*/
 
 
     /**

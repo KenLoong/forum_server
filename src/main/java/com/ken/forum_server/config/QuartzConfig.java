@@ -8,6 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
+
+// 配置 -> 数据库 -> 调用
+//只在第一次读取配置，把配置写入数据库
+//后续只读取数据库来调度任务
 @Configuration
 public class QuartzConfig {
 
@@ -25,8 +29,8 @@ public class QuartzConfig {
         factoryBean.setJobClass(PostScoreRefreshJob.class);
         factoryBean.setName("postScoreRefreshJob");
         factoryBean.setGroup("forumJobGroup");
-        factoryBean.setDurability(true);
-        factoryBean.setRequestsRecovery(true);
+        factoryBean.setDurability(true); //任务长久保存
+        factoryBean.setRequestsRecovery(true); //任务可恢复
         return factoryBean;
     }
 

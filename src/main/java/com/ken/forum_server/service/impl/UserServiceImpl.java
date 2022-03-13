@@ -34,92 +34,94 @@ public class UserServiceImpl implements UserService {
     @Value("${qiniu.bucket.avatar.url}")
     private String avatarBucketUrl;
 
-//    @Autowired
+    private String avatarUrl = "http://localhost:8089/forum_server/img/avatar/";
+
+    //    @Autowired
 //    EventProducer eventProducer;
     @Autowired
     private EventHandler eventHandler;
 
 
     @Override
-    public Map<String,Object> login(User user) {
-        Map<String,Object> map = new HashMap<>();
-        if (user.getUsername() == null || user.getUsername().length() > 20){
-            map.put("state",false);
-            map.put("result",new Result(101,"用户名不可为空且长度不可超过20"));
+    public Map<String, Object> login(User user) {
+        Map<String, Object> map = new HashMap<>();
+        if (user.getUsername() == null || user.getUsername().length() > 20) {
+            map.put("state", false);
+            map.put("result", new Result(101, "用户名不可为空且长度不可超过20"));
             return map;
         }
 
-        if (user.getPassword() == null || user.getPassword().length() == 0 ){
-            map.put("state",false);
-            map.put("result",new Result(102,"密码不可为空"));
+        if (user.getPassword() == null || user.getPassword().length() == 0) {
+            map.put("state", false);
+            map.put("result", new Result(102, "密码不可为空"));
             return map;
         }
 
         User dbUser = userDao.findUserByUsername(user.getUsername());
-        if( dbUser  == null){
-            map.put("state",false);
-            map.put("result",new Result(102,"用户不存在！"));
+        if (dbUser == null) {
+            map.put("state", false);
+            map.put("result", new Result(102, "用户不存在！"));
             return map;
 
         }
 
         String encryption = MD5Util.md5Encryption(user.getPassword());
-        if (!encryption.equals(dbUser.getPassword())){
-            map.put("state",false);
-            map.put("result",new Result(103,"用户名或密碼错误！"));
+        if (!encryption.equals(dbUser.getPassword())) {
+            map.put("state", false);
+            map.put("result", new Result(103, "用户名或密碼错误！"));
             return map;
 
         }
 
-        if (dbUser.getState() == 0){
-            map.put("state",false);
-            map.put("result",new Result(104,"您尚未激活账号，请往注册邮箱处点击链接激活"));
+        if (dbUser.getState() == 0) {
+            map.put("state", false);
+            map.put("result", new Result(104, "您尚未激活账号，请往注册邮箱处点击链接激活"));
             return map;
 
         }
 
         //生成token
-        Map<String,String> tokenMap = new HashMap<>();
-        tokenMap.put("username",user.getUsername());
-        tokenMap.put("id",dbUser.getId()+"");
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("username", user.getUsername());
+        tokenMap.put("id", dbUser.getId() + "");
 
-        JWToken jwToken = new JWToken(JwtUtil.getToken(tokenMap,user.getUsername()));
+        JWToken jwToken = new JWToken(JwtUtil.getToken(tokenMap, user.getUsername()));
         try {
             //让shiro缓存用户信息
             SecurityUtils.getSubject().login(jwToken);
         } catch (UnknownAccountException e) {
-            map.put("state",false);
-            map.put("result",new Result(101,"用户不存在"));
+            map.put("state", false);
+            map.put("result", new Result(101, "用户不存在"));
             return map;
 
         } catch (IncorrectCredentialsException e) {
-            map.put("state",false);
-            map.put("result",new Result(102,"用户名或密码错误"));
+            map.put("state", false);
+            map.put("result", new Result(102, "用户名或密码错误"));
             return map;
 
         }
-        map.put("state",true);
-        map.put("token",jwToken.getCredentials());
+        map.put("state", true);
+        map.put("token", jwToken.getCredentials());
         return map;
     }
 
     @Override
     public Result register(User user) {
 
-        if (user.getUsername() == null || user.getUsername().length() > 20){
-            return new Result(101,"用户名不可为空且长度不可超过20");
+        if (user.getUsername() == null || user.getUsername().length() > 20) {
+            return new Result(101, "用户名不可为空且长度不可超过20");
         }
 
-        if (user.getPassword() == null || user.getPassword().length() > 20){
-            return new Result(102,"密码不可为空且长度不可超过20");
+        if (user.getPassword() == null || user.getPassword().length() > 20) {
+            return new Result(102, "密码不可为空且长度不可超过20");
         }
 
-        if( userDao.findUserByUsername(user.getUsername()) != null){
-            return new Result(103,"用户名已被注册，请换一个");
+        if (userDao.findUserByUsername(user.getUsername()) != null) {
+            return new Result(103, "用户名已被注册，请换一个");
         }
 
-        if (userDao.findUserByEmail(user.getEmail()) != null ){
-            return new Result(104,"邮箱已被注册，请换一个");
+        if (userDao.findUserByEmail(user.getEmail()) != null) {
+            return new Result(104, "邮箱已被注册，请换一个");
         }
 
 
@@ -129,47 +131,53 @@ public class UserServiceImpl implements UserService {
         user.setCreateTime(new Date());
         user.setCode(UUID.randomUUID().toString());
         user.setState(0);
-        user.setAvatar("http://"+avatarBucketUrl+"/default.jpg");
+//        user.setAvatar("http://"+avatarBucketUrl+"/default.jpg");
+        user.setAvatar(avatarUrl + "/default.jpg");
 
 //        //触发注册事件
         Event event = new Event()
                 .setTopic(TOPIC_REGISTER)
-                .setData("user",user);
+                .setData("user", user);
         //异步执行（发送邮件）
         eventHandler.handleTask(event);
 
         userDao.addUser(user);
-        return new Result(200,"注册成功");
+        return new Result(200, "注册成功");
     }
 
     //获取用户信息
     @Override
     public Result getInfo(int id) {
         User user = userDao.findUserById(id);
+        user.setAvatar(avatarUrl + user.getAvatar());
         return new Result().success(user);
     }
 
     @Override
     public Result active(String username, String code) {
         User user = userDao.findUserByUsername(username);
-        if (user.getCode().equals(code)){
+        if (user.getCode().equals(code)) {
             userDao.activeUser(user.getId());
             return new Result().success("激活成功");
-        }else {
-            return new Result(501,"激活失败");
+        } else {
+            return new Result(501, "激活失败");
         }
     }
 
     @Override
     public void upadteAvatar(int userId, String s) {
-        userDao.upadteAvatar(userId,s);
+        userDao.upadteAvatar(userId, s);
     }
 
     @Override
     public User findUserById(Integer userId) {
         User user = userDao.findUserById(userId);
+        if (user == null) {
+            return null;
+        }
+        user.setAvatar(avatarUrl + user.getAvatar());
+        System.out.println(user.getAvatar());
         return user;
-
     }
 
     @Override
@@ -179,7 +187,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(int uid) {
-        userDao.deleteUserById(uid , "ssssdddd");
+        userDao.deleteUserById(uid, "ssssdddd");
     }
 
     @Override
@@ -199,7 +207,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findUserByIds(List<Integer> ids) {
-        return userDao.findUserByIds(ids);
+        List<User> userByIds = userDao.findUserByIds(ids);
+        for (User userById : userByIds) {
+            userById.setAvatar(avatarUrl + userById.getAvatar());
+        }
+        return userByIds;
     }
 
 }

@@ -113,20 +113,30 @@ public interface MessageDao {
     List<Message> findAllMessage(Integer userId, String topic, int offset, int limit);
 
     // 查询向我发过消息的用户id
-    @Select("select distinct(from_id) " +
-            " from message " +
-            " where from_id != 1 " +
-            " and to_id = #{userId} " +
-            " order by create_time desc"
-    )
+//    @Select("select distinct(from_id) " +
+//            " from message " +
+//            " where from_id != 1 " +
+//            " and to_id = #{userId} " +
+//            " order by create_time desc"
+//    )
+    @Select("SELECT DISTINCT(from_id)  " +
+            "FROM " +
+            "(SELECT from_id,create_time FROM message WHERE to_id =  #{userId}  " +
+            " and conversation_id != 'like' and conversation_id != 'follow' "+
+            "ORDER BY create_time DESC) tmep")
     Set<Integer> selectChatToMeIds(int userId);
 
     // 查询我向对方发过消息的用户id
-    @Select("select distinct(to_id) " +
-            " from message " +
-            " where from_id = #{userId} " +
-            " order by create_time desc"
-    )
+//    @Select("select distinct(to_id) " +
+//            " from message " +
+//            " where from_id = #{userId} " +
+//            " order by create_time desc"
+//    )
+    @Select("SELECT DISTINCT(to_id)  " +
+            "FROM " +
+            "(SELECT to_id,create_time FROM message WHERE from_id = #{userId} " +
+            " and conversation_id != 'like' and conversation_id != 'follow' "+
+            "ORDER BY create_time DESC) tmep")
     Set<Integer> selectMeChatToIds(int userId);
 
     // 查询某个会话所包含的所有聊天记录
