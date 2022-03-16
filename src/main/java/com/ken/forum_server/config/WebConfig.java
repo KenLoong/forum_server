@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private DataInterceptor dataInterceptor;
 
-    private static final List<String> EXCLUDE_PATH = Arrays.asList("/", "css/**", "js/**", "img/**","/photo", "json/**", "fonts/**","/*.html");
+//    private static final List<String> EXCLUDE_PATH = Arrays.asList("/img/**", "css/**", "js/**", "img/**","photo/**","/*.html");
 
 
     /**
@@ -52,8 +52,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         //注册拦截器，拦截所有访问路径
         registry.addInterceptor(getTokenInterceptor()).
-                addPathPatterns("/**").
-                excludePathPatterns(EXCLUDE_PATH);
+                addPathPatterns("/**");
+        //不写excludePath也可访问到static下的目录资源
+//                excludePathPatterns(EXCLUDE_PATH);
 //        registry.addInterceptor(dataInterceptor).addPathPatterns("/**");
 
     }
@@ -75,10 +76,12 @@ classpath:/public/
 
 */
 
-
     //静态资源映射
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**");
+//        registry.addResourceHandler("/static/**");
+        //资源映射
+        //E:\myProject\forum_server
+        registry.addResourceHandler("/img/**").addResourceLocations("file:"+System.getProperty("user.dir")+"\\");
     }
 }

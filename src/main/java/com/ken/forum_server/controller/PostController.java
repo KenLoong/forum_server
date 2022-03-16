@@ -84,6 +84,8 @@ public class PostController extends BaseController {
 
     private String localPicUrl =  "http://localhost:8089/forum_server/img/photo/";;
 
+    @Value("${root.fileUrl}")
+    private String localFileUrl;
 
     /**
      * 发表推文
@@ -306,10 +308,11 @@ public class PostController extends BaseController {
      * @return
      */
     @PostMapping("/upload")
-    public Result upload(@RequestParam(value = "image", required = true)MultipartFile file, UploadData uploadData) throws IOException {
+    public Result upload(@RequestParam(value = "image", required = true)MultipartFile file) throws IOException {
 
-        String filePath = "src/main/resources/static/img/photo/";
+//        String filePath = "src/main/resources/static/img/photo/";
 //        String filePath = "/usr/share/nginx/html/dist/img/photo/";
+        String filePath = System.getProperty(localFileUrl)+"\\photo\\";
         //判断文件夹目录是否存在
         File targetFile = new File(filePath);
         if (!targetFile.exists()) {
@@ -397,8 +400,8 @@ public class PostController extends BaseController {
     }
 */
 
-    //删除文章的图片接口
-    @PostMapping("/delimg")
+    //从云端删除文章的图片接口
+    /*@PostMapping("/delimg")
     public Result deletePicture(@RequestParam(value = "url" , required = true) String delUrl){
         Auth auth = Auth.create(accessKey, secretKey);
         Configuration config = new Configuration(Zone.huanan());
@@ -415,6 +418,24 @@ public class PostController extends BaseController {
             return new Result().fail("删除失败");
         }
 
+        return new Result().success("删除成功");
+    } */
+
+    //删除文章的图片接口
+    @PostMapping("/delimg")
+    public Result deletePicture(@RequestParam(value = "url" , required = true) String delUrl){
+
+
+        //http://localhost:8089/forum_server/img/photo/29fb2b93-83cb-4f7b-aa10-1c42724dcf94.jpg
+        //指定需要删除的文件，和文件所在的存储空间
+        delUrl = delUrl.substring(localPicUrl.length());
+        String filePath = System.getProperty(localFileUrl)+"\\photo\\";
+        File targetFile = new File(filePath+delUrl);
+        boolean b = targetFile.delete();
+        logger.info("删除图片名为："+delUrl);
+        if (!b){
+            System.out.println("删除图片失败");
+        }
         return new Result().success("删除成功");
     }
 

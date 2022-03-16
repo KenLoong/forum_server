@@ -87,6 +87,6 @@ qiniu:
       name: 
       url: 
 
-
-
+root:
+  fileUrl: "user.dir"
 

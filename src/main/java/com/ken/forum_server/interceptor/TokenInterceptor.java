@@ -29,25 +29,26 @@ public class TokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws CustomException {
 
-        if (handler instanceof HandlerMethod){
+
+        if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
-            System.out.println("拦截了 : "+((HandlerMethod) handler).getMethod().getName());
+            System.out.println("拦截了 : " + ((HandlerMethod) handler).getMethod().getName());
             TokenFree tokenFree = handlerMethod.getMethodAnnotation(TokenFree.class);
             //无需token验证，直接放行
-            if (tokenFree != null){
+            if (tokenFree != null) {
                 return true;
             }
 
             //获取请求头里的token
             String token = request.getHeader(JwtUtil.HEADER_TOKEN_KEY);
 
-            if (StringUtils.isEmpty(token)){
+            if (StringUtils.isEmpty(token)) {
                 throw new CustomException("请先登录");
             }
             //交给shiro验证token是否正确
             try {
                 SecurityUtils.getSubject().login(new JWToken(token));
-            }catch (CustomException e){
+            } catch (CustomException e) {
                 throw e;
             }
 

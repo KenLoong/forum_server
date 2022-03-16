@@ -70,6 +70,9 @@ public class UserController extends BaseController{
     @Value("${qiniu.bucket.avatar.url}")
     private String avatarBucketUrl;
 
+    @Value("${root.fileUrl}")
+    private String localFileUrl;
+
     @Autowired
     MailUtil mailUtil;
 
@@ -215,9 +218,9 @@ public class UserController extends BaseController{
      */
     @PostMapping("/avatar")
     public Result updateAvatar(MultipartFile file) throws IOException {
-//        String filePath = "static/img/avatar/";
 
-        String filePath = "src/main/resources/static/img/avatar/";
+//        String filePath = "src/main/resources/static/img/avatar/";
+        String filePath = System.getProperty(localFileUrl)+"\\avatar\\";
 //        String filePath = "/usr/share/nginx/html/dist/img/avatar/";
         //获取用户id
         int userId = getUserId(request);
