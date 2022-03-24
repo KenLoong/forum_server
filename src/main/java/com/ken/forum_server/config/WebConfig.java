@@ -53,28 +53,12 @@ public class WebConfig implements WebMvcConfigurer {
         //注册拦截器，拦截所有访问路径
         registry.addInterceptor(getTokenInterceptor()).
                 addPathPatterns("/**");
-        //不写excludePath也可访问到static下的目录资源
 //                excludePathPatterns(EXCLUDE_PATH);
 //        registry.addInterceptor(dataInterceptor).addPathPatterns("/**");
 
     }
 
-/*WebMvcAutoConfiguration类自动为我们注册了如下目录为静态资源目录，也就是说直接可访问到资源的目录。
 
-registry.addResourceHandler("/**").addResourceLocations(
-  "classpath:/META-INF/resources/", "classpath:/resources/",
-      "classpath:/static/", "classpath:/public/", "/")
-  // 设置缓存时间
-  .setCachePeriod(cachePeriod));
-
-优先级从上到下:
-classpath:/META-INF/resources/
-classpath:/resources/
-classpath:/static/
-classpath:/public/
-/：当前项目的根路径
-
-*/
 
     //静态资源映射
     @Override

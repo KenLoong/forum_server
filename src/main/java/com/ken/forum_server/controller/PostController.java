@@ -55,8 +55,6 @@ public class PostController extends BaseController {
     @Autowired
     private PostService postService;
     @Autowired
-    private PictureService pictureService;
-    @Autowired
     private CommentService commentService;
     @Autowired
     private UserService userService;
@@ -150,8 +148,7 @@ public class PostController extends BaseController {
         int collectStatus = !isLogin(request) ? 0 :
                 collectService.findEntityCollectStatus(getUserId(request),pid);
 
-        //帖子图片
-        List<String> pictures = pictureService.findByPid(post.getId());
+
 
         PostVo postVo = new PostVo();
         postVo.setPost(post);
@@ -218,7 +215,7 @@ public class PostController extends BaseController {
         PostDetailVo postDetailVo = new PostDetailVo();
         postDetailVo.setComments(commentVoList);
         postDetailVo.setPostVo(postVo);
-        postDetailVo.setPictures(pictures);
+//        postDetailVo.setPictures(pictures);
         postDetailVo.setLikeStatus(likeStatus);
         postDetailVo.setCollectStatus(collectStatus);
 
@@ -331,11 +328,9 @@ public class PostController extends BaseController {
         out.write(fileBytes);
         out.flush();
         out.close();
-//        //修改数据库数据
-//        pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
+
         //返回图片访问路径
         return new Result().success(localPicUrl+fileName);
-//        return new Result().success("图片上传成功");
     }
 
    //云服务器的文章图片存储
@@ -389,9 +384,6 @@ public class PostController extends BaseController {
             return new Result().fail("图片上传失败");
         }
 
-
-        //修改数据库数据(改用七牛云存储图片，图片地址直接放在推文里,不再存数据库)
-//         pictureService.addPicture(uploadData.getPid(),"/img/photo/"+fileName);
 
         logger.info("上传图片路径为："+"http://"+pictureBucketUrl + "/" + fileName);
 
@@ -452,7 +444,7 @@ public class PostController extends BaseController {
                 .setUserId(getUserId(request))
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
-        //用kafka
+        //放弃用kafka
 //        eventProducer.fireEvent(event);
         eventHandler.handleTask(event);
 

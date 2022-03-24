@@ -176,7 +176,6 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         user.setAvatar(avatarUrl + user.getAvatar());
-        System.out.println(user.getAvatar());
         return user;
     }
 

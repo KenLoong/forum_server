@@ -29,7 +29,7 @@ public class TokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws CustomException {
 
-
+        //访问头像是 ResourceHttpRequestHandler，故会被直接放行
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             System.out.println("拦截了 : " + ((HandlerMethod) handler).getMethod().getName());

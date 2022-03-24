@@ -71,6 +71,7 @@ public class PostScoreRefreshJob implements Job {
         logger.info("[任务结束] 帖子分数刷新完毕!");
     }
 
+    //计算帖子的热度分数
     private void refresh(int postId) {
         Post post = postService.findPostById(postId);
 
@@ -91,9 +92,9 @@ public class PostScoreRefreshJob implements Job {
         // 分数 = 帖子权重 + 距离天数
         double score = Math.log10(Math.max(w, 1))
                 + (post.getCreateTime().getTime() - epoch.getTime()) / (1000 * 3600 * 24);
-        // 更新帖子分数
+        // 更新帖子分数（DB）
         postService.updateScore(postId, score);
-        // 同步搜索数据
+        // 同步搜索数据（ES）
         post.setScore(score);
         elasticSearchService.savePost(post);
     }

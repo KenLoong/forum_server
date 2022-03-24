@@ -43,8 +43,7 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostDao postDao;
-    @Autowired
-    private UserDao userDao;
+
     @Autowired
     private LikeService likeService;
     @Autowired
@@ -76,8 +75,11 @@ public class PostServiceImpl implements PostService {
         // 初始化帖子列表缓存
         postListCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
+                //设置缓存过期时间
                 .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
                 .build(new CacheLoader<String, List<Post>>() {
+                    //load方法就是通过Caffeine获取缓存时实际执行的方法
+                    //若对应的key不存在，就会执行此方法
                     @Nullable
                     @Override
                     public List<Post> load(@NonNull String key) throws Exception {
@@ -86,12 +88,14 @@ public class PostServiceImpl implements PostService {
                         }
 
                         int offset = Integer.valueOf(key);
-                        // 二级缓存: Redis -> mysql
+                        // TODO 二级缓存: Redis -> mysql
 
                         logger.info("load post list from DB.");
+                        //从数据库查询数据，放入缓存
                         return postDao.listByHot(offset);
                     }
                 });
+
         // 初始化帖子总数缓存
         postRowsCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
@@ -148,7 +152,6 @@ public class PostServiceImpl implements PostService {
         int total = 0;
 
         if (listMode == 0){ //最新推文
-            logger.info("loading posts form DB");
             posts = postDao.list(offset);
             total = postDao.count();
         }else {     //最热推文
