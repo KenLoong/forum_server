@@ -1,0 +1,6 @@
+avatar/
+photo/
+target/
+**/resources/**/application.yml
+
+

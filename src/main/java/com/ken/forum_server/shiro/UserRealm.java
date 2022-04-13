@@ -48,6 +48,7 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         //获取用户的id
         int id = (int) principalCollection.getPrimaryPrincipal();
+
         //根据用户名查询当前用户的角色列表
         Set<String> roleNames = roleDao.queryRoleNamesByUserId(id);
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
