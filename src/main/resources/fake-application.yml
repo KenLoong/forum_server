@@ -1,0 +1,92 @@
+## \u5C06\u8BE5\u6587\u4EF6\u540D\u6539\u4E3Aapplication.yml\u4F7F\u7528\uFF0C\u5E76\u586B\u4E0A\u5FC5\u8981\u53C2\u6570\uFF0C\u5982\u90AE\u4EF6\u8BBE\u7F6E
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://127.0.0.1:3306/forum_server?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=CTT
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #\u90AE\u4EF6\u8BBE\u7F6E
+  mail:
+    host: xxx.xxx.com
+    username: xxx
+    password: xxx
+    properties:
+      mail.smtp.port: 465
+      mail.smtp.socketFactory.fallback: false
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.port: 465
+  #\u6587\u4EF6\u5927\u5C0F\u8BBE\u7F6E
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 10MB
+      max-file-size: 10MB
+      file-size-threshold: 20MB
+
+
+  #         redis-server.exe redis.windows.conf
+  redis:
+    database: 11
+    host: 127.0.0.1
+    port: 6379
+
+
+
+  data:
+    elasticsearch:
+      cluster-name: ken_forum
+      cluster-nodes: 127.0.0.1:9300
+
+  # \u5982\u679C\u56E0\u4E3Aquartz\u800C\u5BFC\u81F4\u9879\u76EE\u542F\u52A8\u5931\u8D25\uFF0C\u90A3\u4E48\u5C31\u5148\u6E05\u7A7Aqrtz\u76F8\u5173\u8868\u7684\u6570\u636E\uFF0C\u518D\u542F\u52A8
+  # \u5982\u679C\u6E05\u7A7A\u8868\u7684\u6570\u636E\u8FD8\u662F\u542F\u52A8\u5931\u8D25\uFF0C\u90A3\u5C31\u6CE8\u91CA\u6389\u4E0B\u9762\u7684quartz\u7684\u914D\u7F6E\uFF0C\u8FD9\u6837quartz\u5C31\u4F1A\u8BFB\u53D6\u914D\u7F6E\u7C7B\u7684\u4EE3\u7801\u800C\u4E0D\u4F1A\u53BB\u6570\u636E\u5E93\u8BFB\u53D6\u914D\u7F6E
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: forumScheduler
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+
+
+server:
+  port: 8089
+  servlet:
+    context-path: /forum_server
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml # \u914D\u7F6E Mapper XML \u5730\u5740
+  type-aliases-package: com.ken.forum_server.pojo # \u914D\u7F6E\u6570\u636E\u5E93\u5B9E\u4F53\u522B\u540D
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+#\u7F13\u5B58\u914D\u7F6E
+caffeine:
+  posts:
+    max-size: 15
+    expire-seconds: 180
+
+
+# \u4E03\u725B\u4E91\u7684\u914D\u7F6E
+qiniu:
+  key:
+    access:
+    secret:
+  bucket:
+    avatar:
+      name:
+      url:
+    picture:
+      name:
+      url:
+
+root:
+  fileUrl: "user.dir"
+

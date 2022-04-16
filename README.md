@@ -22,7 +22,7 @@
 
 ## 
 
-## 后端工程地址：https://github.com/KenLoong/forum_serve
+## 后端工程地址：https://github.com/KenLoong/forum_server
 
 ## 
 
